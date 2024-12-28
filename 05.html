@@ -1,0 +1,313 @@
+<h2>Piaty deň</h2>
+
+<a href="https://adventofcode.com/2024/day/5" target=_blank>zadanie: Print Queue</a>
+
+<hr/>
+<h3>Prvá časť</h3>
+<p>
+
+V tejto úlohe máme stránky, medzi ktorými sú závislosti typu <q>stránka $i$ musí byť
+  pred stránkou $j$</q>. Toto je dobré si predstavovať tak, že máme guličky s číslami
+stránok a závislosť znamená, že z guličky s číslom $i$ ide šípka do guličky s číslom $j$.
+Príklad zo zadania potom vyzerá takto:
+</p>
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \usetikzlibrary{calc,arrows.meta}
+  \begin{tikzpicture}[
+      yscale=1.1,
+      xscale=1.1,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round
+    ]
+
+  \foreach \v[count=\i from 0] in {13, 29, 47, 53, 61, 75, 97} {
+     \pgfmathsetmacro{\ang}{\i*360/7}
+     \node[circle,draw=black,fill=primary]  (n\v) at (\ang:3) {$\v$};
+  }
+
+  \foreach \i/\j in {47/53,
+97/13,
+97/61,
+97/47,
+75/29,
+61/13,
+75/53,
+29/13,
+97/29,
+53/29,
+61/53,
+97/53,
+61/29,
+47/13,
+75/47,
+97/75,
+47/61,
+75/61,
+47/29,
+75/13,
+53/13} {
+    \draw[primary,-{Latex[length=3mm]}] (n\i) -- (n\j);
+  }
+
+  
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+<br/>
+
+<p>
+Potom nasleduje niekoľko riadkov, ktoré treba skontrolovať. Na prečítanie vstupu je pohodlné 
+použiť funkciu ~getline(cin, line)~ a spracovať každý riadok vstupu. V knižnici ~algorithm~
+je funkcia ~replace(from, to, old_val, new_val)~, ktorá robí to, že každý výskyt jednej hodnoty
+(znaku) prepíše inou. ~from~ a ~to~ sú, podobne ako pri funkcii ~sort()~, iterátory, takže napr. 
+ak máme premennú ~string line;~ tak zmeniť v nej všetky výskyty čiarky na medzeru 
+viem pomocou ~replace(line.begin(), line.end(), ',', ' ');~
+</p>
+
+<button class="btn btn-primary btn-small" id="button-05a-vstup" onclick="ukaz('05a-vstup')"> 
+  čítanie vstupu </button>
+<div class="hidden" id="riesenie-05a-vstup">
+
+@05_1@
+
+</div>
+
+<p style="padding-top:30px;">
+Vždy, keď sa zamýšľame nad riešením, je dobré vedieť, aký veľký vstup je treba spracovať. Podľa toho sa dá odhadnúť, aký prístup treba zvoliť.
+V mojom prípade  mal vstup $49$ rôznych stránok, medzi nimi
+$1176$ sipiek (t.j. zjavne medzi každou dvojicou stránok ide šípka nejakým smerom, lebo zo $49$ stránok mám $\frac{49\cdot48}{2}=1176$ dvojíc). 
+Potom nasledovalo $214$ riadkov, priemerná dĺžka riadka bola $14.6822$.
+</p>
+
+
+<button class="btn btn-primary btn-small" id="button-05a" onclick="ukaz('05a')"> riešenie </button>
+<div class="hidden" id="riesenie-05a">
+
+<p>
+Prvé, čo napadne, je priamočiare riešenie: šípky si uložím v dvoch vektoroch ~vector<int> from, to;~ tak, že $i$-ta šípka ide z čísla ~from[i]~ do čísla ~to[i]~.
+Potom každý riadok ~vector<int> r;~ kontrolujem tak, že pre každé dve hodnoty ~r[i]~ a ~r[j]~ pre $j\gt i$ skontrolujem (tak, že prejdem všetky šípky), či náhodou
+nejde šípka z ~r[j]~ do ~r[i]~. 
+</p>
+
+<p>
+Koľko sa pri tom zhruba napočítam? Pri priemernej dĺžke riadku $15$ mám v jednom riadku $\frac{15\cdot14}{2}=105\approx100$ dvojíc pozícií, ktoré treba skontrolovať.
+Pre každú z nich treba prejsť $\approx1000$ sšípiek, a celé to treba pre $\approx200$ riadkov. Dokopy $\approx100\cdot1000\cdot200=20\, 000\, 000$ nejakých základných operácií.
+Predpokladám, že dosť veľa riadkov budem vedieť prestať kontrolovať aj skôr (akonáhle nájdem zlú dvojicu, nemusím kontrolovať ďalej), takže by to malo byť 
+v pohode. 
+</p>
+
+@05a@
+
+<p>
+Jedna dôležitá poznámka. V Advent of Code ide o to, dostať riešenie jedného konkrétneho vstupu. Čokoľvek, čo ho pomôže nájsť, je v poriadku: častokrát dáva zmysel 
+pozrieť sa do vstupu, či nemá nejaké špeciálne vlastnosti, prípadne ho nejak poloautomaticky predspracovať, náhodne skúšať a pod.
+Pri súťažiach ako <a href="www.ksp.sk" target=_blank>KSP</a>, <a href="https://oi.sk/" target=_blank>OI</a> a pod. ide o to, navrhnúť algoritmus, 
+ktorý má čo najlepšiu zložitosť (viď. kapitola 12).
+V tom prípade by toto riešenie nebolo moc dobré.
+</p>
+
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+V druhej časti je úlohou správne zoradiť nesprávne riadky (tak, ako sme ich našli v prvej časti).
+Pre každý riadok sa treba pozrieť na závislosti medzi stránkami v ňom a treba ich zoradiť tak, aby boli všetky splnené.
+Keďže zadanie je formulované tak, ako je, dá sa predpokladať, že to vždy pôjde, navyše ak by aj bolo viac možností, tak stredný prvok bude vždy rovnaký.
+O to sa ďalej netreba starať. Napríklad riadok $[75,97,47,61,53]$ vyzerá takto:
+</p>
+
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \usetikzlibrary{calc,arrows.meta}
+  \begin{tikzpicture}[
+      yscale=1.1,
+      xscale=1.1,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round
+    ]
+
+  \foreach \v[count=\i from 0] in {13, 29, 47, 53, 61, 75, 97} {
+     \pgfmathsetmacro{\ang}{\i*360/7}
+     \node[circle,draw=black,fill=primary!30!black]  (n\v) at (\ang:3) {$\v$};
+  }
+
+  \foreach \i/\j in {47/53,
+97/13,
+97/61,
+97/47,
+75/29,
+61/13,
+75/53,
+29/13,
+97/29,
+53/29,
+61/53,
+97/53,
+61/29,
+47/13,
+75/47,
+97/75,
+47/61,
+75/61,
+47/29,
+75/13,
+53/13} {
+    \draw[primary!30!black,-{Latex[length=3mm]}] (n\i) -- (n\j);
+  }
+  
+  \foreach \v/\i in { 47/2, 53/3, 61/4, 75/5, 97/6} {
+     \pgfmathsetmacro{\ang}{\i*360/7}
+     \node[circle,draw=black,fill=primary]  at (\ang:3) {$\v$};
+  }
+
+  \foreach \i/\j in {47/53,
+97/61,
+97/47,
+75/53,
+61/53,
+97/53,
+75/47,
+97/75,
+47/61,
+75/61} {
+    \draw[primary,-{Latex[length=3mm]}] (n\i) -- (n\j);
+  }
+  
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+<p style="padding-top:35px;">
+a preto jeho utriedenie by bolo $[97,75,47,61,53]$.
+</p>
+
+<p>
+Vidno, že ak má byť niečo na začiatku utriedeného zoznamu, nesmie do toho vchádzať žiadna šípka. V našom príklade je jediná taká možnosť, $97$. Ak by ich bolo viac, tak ľahko vidno, že môžu ísť
+v ľubovoľnom poradí. Pokračujme v našom príklade: ak viem, že na začiatku má byť $97$, tak šípky odchádzajúce z $97$ mi už nevadia, tie vždy pôjdu správnym smerom. Môžem ich preto vymazať a dostanem
+</p>
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \usetikzlibrary{calc,arrows.meta}
+  \begin{tikzpicture}[
+      yscale=1.1,
+      xscale=1.1,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round
+    ]
+
+  \foreach \v[count=\i from 0] in {13, 29, 47, 53, 61, 75, 97} {
+     \pgfmathsetmacro{\ang}{\i*360/7}
+     \node[circle,draw=black,fill=primary!30!black]  (n\v) at (\ang:3) {$\v$};
+  }
+
+  \foreach \i/\j in {47/53,
+97/13,
+97/61,
+97/47,
+75/29,
+61/13,
+75/53,
+29/13,
+97/29,
+53/29,
+61/53,
+97/53,
+61/29,
+47/13,
+75/47,
+97/75,
+47/61,
+75/61,
+47/29,
+75/13,
+53/13} {
+    \draw[primary!30!black,-{Latex[length=3mm]}] (n\i) -- (n\j);
+  }
+  
+  \foreach \v/\i in { 47/2, 53/3, 61/4, 75/5, 97/6} {
+     \pgfmathsetmacro{\ang}{\i*360/7}
+     \node[circle,draw=black,fill=primary]  at (\ang:3) {$\v$};
+  }
+
+  \foreach \i/\j in {47/53,
+75/53,
+61/53,
+75/47,
+47/61,
+75/61} {
+    \draw[primary,-{Latex[length=3mm]}] (n\i) -- (n\j);
+  }
+  
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+<p style="padding-top:35px;">
+Čo môže byť ďalšie v poradí? Zjavne do toho nemôže ísť žiadna zo zostávajúcich šípok. V našom prípade je opäť jediná možnosť: $75$. Takto to môžeme pokračovať až do konca.
+Ostáva vymyslieť, ako to naprogramovať.
+</p>
+
+
+<button class="btn btn-primary btn-small" id="button-05b" onclick="ukaz('05b')"> riešenie </button>
+<div class="hidden" id="riesenie-05b">
+
+<p>
+Pre každý riadok si najprv zapamätám, ktoré stránky v ňom sú. Aby som k nim vedel pohodlne pristupovať, budem mať ~map<int, bool> jetu;~ Keď mám riadok uložený vo vecotre ~r~, 
+naplním si mapu ~for (int x : r) jetu[x] = true;~ využijúc to, že ak som nejakú hodnotu do mapy nevložil, následný test napr. ~jetu[-5]~ vráti defaultnú hodnotu, ktoru je ~false~.
+(Keď sa pozriem do vstupu, vidím, že všetky stránky sú dvojciferné čísla, takže rovnako dobre by mi poslúžilo  ~vector<bool> jetu(100,false);~ čo vyrobí vector typu ~bool~ dĺžky 100
+a nastaví jeho hodnoty na ~false~. Napĺňanie ~for (int x : r) jetu[x] = true;~ by bolo rovnaské a ani nič ďalej by sa nezmenilo).
+</p>
+
+<p>
+Urobím si ďalšiu ~map<int, int> indeg;~ kde si pre každú relevantnú stránku $p$ (takú, že ~jetu[p]==true~) budem pamätať jej <q>indegree</q>: počet šípok z relevantných stránok, ktoré do nej
+vchádzajú (napr. v príklade na začiatku je ~indeg[53]==4~, ~indeg[75]==1~ atď). Zároveň si urobím ~map<int, vector<int>> out;~ kde si pre každú relevantnú stránku budem pamätať šípky, ktoré z nej 
+odchádzajú do iných relevantných stránok (takže napr. ~out[75]=={61,47,53}~). Na začiatku si ich nastavím takto:
+</p>
+
+@05_2@
+
+<p>
+Teraz si pripravím ~vector<int> zero;~ kde si budem ukladať stránky, ktoré majú aktuálne nulový indegree a
+~vector<int> sorted~, kam si budem postupne ukladať utriedenú časť riadka. ~zero~ si nastavím takto: ~for (int x : r) if (indeg[x] == 0) zero.push_back(x);~
+</p>
+
+<p>
+V hlavnom cykle vždy zoberiem stránku ~u~, do ktorej nejde žiadna šípka, t.j. jeden prvok zo ~zero~ (je to jedno, ktorý, takže môžem aj z konca, čo je krátke a efektívne). Tento prvok zaradím 
+na koniec ~sorted~. Zároveň znížim indegree všetkým stránkam z ~out[u]~ (~out[u]~ je zoznam všetkých stránok, do ktorých ide šípka z ~u~). Ak pri tom zistím, že do niektorej stránky už žiadne
+šípky nejdú, pridám ju do ~sorted~. Takže budem mať čosi takéto:
+</p>
+
+@05_3@
+
+<button class="btn btn-primary btn-small" id="button-05b2" onclick="ukaz('05b2')"> úplne celý program </button>
+<div class="hidden" id="riesenie-05b2">
+
+@05b@
+</div>
+
+
+</div>
+

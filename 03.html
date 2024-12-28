@@ -1,0 +1,97 @@
+<h2>Tretí deň</h2>
+
+<a href="https://adventofcode.com/2024/day/23" target=_blank>zadanie: Mull It Over</a>
+
+<hr/>
+<h3>Prvá časť</h3>
+<p>
+
+Táto úloha je ako šitá na tzv. <q>regulárne výrazy</q>. Regulárny výraz (<em>regex</em>, <em>regulrar expression</em>) je všeobecný spôsob (t.j. nie je to vec 
+konkrétneho programovacieho jazyka), ako popísať množinu stringov, ktoré spĺňajú nejaký vzor. Najjednoduchší regex je jedno písmenko, ktoré reprezentuje
+samé seba, napr. regex $a$ reprezentuje string ~"a"~. Dva za sebou napísané regexy reprezentujú všetky stringy, ktorých prvú časť reprezentuje prvý regex a druhú časť druhý regex.
+napr. $ab$ reprezentuje string ~"ab"~. Znak $*$, ak je napísaný za nejakým regexom, znamená jeho opakovanie 0 alebo viackrát, takže napr. regex $ab^*c$ reprezentuje všetky
+stringy ~"ac", "abc", "abbc", "abbbc", ...~. Podobne $+$ znamená opakovanie 1 alebo viackrát a číselný zápis $\{2,9\}$ znamená opakovanie aspoň dvakrát a najviac deväťkrát.
+</p>
+
+<p>
+Regex $[abc]$ znamená niektoré (jedno) písmeno spomedzi $a$, $b$, $c$ a pre za sebou idúce písmená sa dá zapísať aj skrátene $[a-c]$. Takže napr. regex $[0-9]$ reprezentuje jednu cifru
+a $[1-9][0-9]^*$ reprezentuje zápis čísla bez vedúcich núl, napr. ~"1023", "225507", ... ~
+</p>
+
+<p>
+Znak $|$ znamená zjednotenie: ak $A$ a $B$ sú regexy, tak regex $A|B$ reprezentuje všetky stringy, ktoré reprezentuje buď $A$ alebo $B$. Napr. $a\{1,2\}b^*\;|\;b\{1,2\}a^*$ znamená
+~"a","aa","ab","aab","abb","aabb",...,"b","bb","ba","bba","baa","bbaa",...~
+</p>
+
+<p>
+V C++ je na prácu s gerexami knižnica ~regex~ (~#include <regex>~, celá dokumentácia je <a href="https://en.cppreference.com/w/cpp/regex">tu</a>).
+Základom je premenná typu ~regex~, ktorej pri vytváraní viem podhodiť zápis regexu, napr. ~regex cislo("[1-9][0-9]*");~
+</p>
+
+<p>
+Keď už raz regex vyrobíme, dá sa použiť funkcia ~regex_search()~. Má tri parametre: prvý je vstupný string, tretí je regex, no a druhý je premenná špeciálneho typu ~smatch~ (alebo podobného),
+ktorá bude na konci obsahovať výsledok. Ak si spravím premennú ~smatch match;~ tak volanie ~regex_search(line, match, cislo)~ nájde prvý úsek v stringu ~line~ ktorý je reprezentovaný regexom ~cislo~.
+Vráti sa hodnota ~true~, ak sa taký výskyt našiel, a v tom prípade má premenná ~match~ nastavenú hodnotu ~match[0]~ na príslušný úsek a metóda (viď. kapitola 20)  ~match.suffix()~ vráti zostávajúcu
+časť reťazca. Preto nasledovný program
+</p>
+
+@03_1@
+
+<p>
+vypíše postupne 12
+93
+4040
+891
+808.
+</p>
+
+<p>
+Regex môže mať vyznačené podčasti, napr. na kontrolovanie kódu IBAN môžeme mať regex ~"SK[0-9]{2}([0-9]{4})0*([1-9][0-9]*)"~. IBAN začína písmenami ~"SK"~, potom nasledujú dve číslice.
+Potom nasleduje kód banky, čo sú 4 číslice. Túto časť sme uzavreli do zátvoriek. Potom nasleduje dakoľko núl (v skutočnosti ten počet núl je fixne daný, ale to tu teraz nemusíme riešiť) a potom
+číslo účtu pozostávajúce z číslic. Túto časť sme opäť uzavreli do zátvoriek. Náš regex má preto dve podčasti a funkcia ~regex_search~ okrem ~match[0]~ nastaví aj ~match[1]~ na prvú podčasť a ~match[2]~
+na druhú podčasť. Každá podčasť má aj premennú ~match[i].matched~, ktorá hovorí, či príslušná časť bola použitá (to má zmysel pri regexoch s alternatívou ~"|"~). Nasledovný program
+</p>
+
+@03_2@
+
+<p>
+vypíše ~banka=0720 ucet=2891987426353~. Ak ale znaky ~'(',')','[',']'~ majú v regexe špeciálnu úlohu, ako napísať regex, ktorý by ich preprezentoval? Na to sa používa backslash, napr. $\\($ je regex, ktorý reprezentuje zátvorku. Lenže v C++ má ~'\'~
+v stringu  špeciálnu úlohu: vyrába špeciálne znaky (napr. ~'\n'~ je znak konca riadku). Preto ak chcem v regexe reprezentovať znak ~'('~, musím napísať ~"\\("~. 
+Nasledovný program
+</p>
+
+@03_3@
+
+<p>
+Vypíše ~"lamu ilelm ema mama"~
+</p>
+
+<p>
+Posledná vec, čo sa tu hodí poznať, je funkcia ~int x = stoi(s);~, ktorá zo stringu ~s~ vyrobí číslo typu ~int~.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-03a" onclick="ukaz('03a')"> riešenie </button>
+<div class="hidden" id="riesenie-03a">
+
+<p>
+V podstate jediná výzva je napísať správny regex, ktorý reprezentuje ${\tt mul}(x,y)$, kde $x$ a $y$ sú trojciferné čísla.
+</p>
+
+@03a@
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+Opäť hlavne treba napísať vhodný regex. Potom ho stačí parsovať a prepínať si premennú ~bool enabled~, ktorá určuje, či sa má výsledok násobenia brať do úvahy alebo nie.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-03b" onclick="ukaz('03b')"> riešenie </button>
+<div class="hidden" id="riesenie-03b">
+
+@03b@  
+
+</div>
+

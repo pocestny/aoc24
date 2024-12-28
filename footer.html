@@ -1,0 +1,30 @@
+<div style="padding-top:35px;"></div> 
+</div> <!-- /grid-content -->
+</div> <!-- /grid-container -->
+</div> <!-- /container -->
+
+<script src="./js/highlight.min.js"></script>
+
+<script>
+  function set_priklad(num) {
+      const elems = document.getElementsByClassName("priklad");
+      for (let i = 0; i < elems.length; i++) 
+          elems[i].classList.add('hidden');
+      document.getElementById("priklad-"+num).classList.remove('hidden');
+  }
+
+  function ukaz(num) {
+    document.getElementById("button-"+num).classList.add('hidden');
+    document.getElementById("riesenie-"+num).classList.remove('hidden');
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+      const elems = document.getElementsByClassName("language-cpp");
+      for (let i = 0; i < elems.length; i++) 
+          window.hljs.highlightElement(elems[i]);
+  });
+</script>
+</body>
+</html>
+
+

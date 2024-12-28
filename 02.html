@@ -1,0 +1,77 @@
+<h2>Druhý deň</h2>
+
+<a href="https://adventofcode.com/2024/day/2" target=_blank>zadanie: Red-Nosed Reports</a>
+
+<hr/>
+<h3>Prvá časť</h3>
+
+<p>
+Potrebujeme zo vstupu prečítať sériu záznamov, v kždom zázname sú čísla oddelené medzerou.
+Každý záznam treba skontrolovať, či je bezpečný: buď celý rastúci, alebo celý klesajúci, a zároveň sa vždy nasledujúce hodnoty líšia aspoň o 1
+a najviac o 3.
+</p>
+
+<p> 
+Najprv k čítaniu vstupu. Keďže nevieme, aký dlhý je riadok, nemôžeme len tak jednoducho použiť ~>>~, lebo to preskakuje medzery aj konce riadku. Jednoduchšie je 
+prečítať celý riadok do premennej typu ~string~ (kapitola 21). ~string~ je vlastne ~vector<char>~ ( o ~char~ pozri kapitolu 7) s nejakými metódami navyše.
+Ak mám premennú ~string line;~, môžem napísať ~cin >> line;~, ale toto prečíta znaky iba po prvú medzeru. Keď chcem prečítať celý riaok, dá sa použiť ~getline(cin, line)~.
+Tiež vracia ~bool~ (v skutočnosti nie celkom, ale nateraz to stačí takto) podľa toho, či sa podarilo prečítať. Takže pattern na čítanie vstupu môže byť
+
+@02_1@
+
+</p>
+
+<p>
+Ako spracovať jeden riadok uložený v premennej typu ~string~? Jednoduchý spôsob je pomocou ~stringstream~ (~#include <sstream>~). Volaním ~stringstream str(line);~ vyrobím premennú ~str~, ktorá
+funguje rovnako ako ~cin~ (t.j. viem písať ~str >> y;~ a pod.), ale namiesto vstupu číta znaky zo stringu, ktorý dostala v čase, keď sa vyrábala (to, že premenná dostane pri vytváraní parameter
+v zátvorkách, ako keby to bolo volanie funkcie, je v skutočnosti volanie tzv. konštruktora, viď. kapitola 20).
+</p>
+
+<p>
+Pre pohodlnejšiu kontrolu si stačí uvedomiť, že to, či je zoznam rastúci alebo klesajúci, viem zistiť už z prvých dvoch prvkov. Stačí písať program iba pre rastúce zoznamy: ak je klesajúci,
+stačí kontrolovať, či je rastúci smerom odzadu. V knižnici ~algorithm~ (mimochodom, tu je <a href="https://en.cppreference.com/w/cpp/algorithm" target=_blank>kompletná referencia</a>) je 
+funkcia ~reverse()~, ktorá otočí daný vektor. Funguje podobne ako ~sort()~, t.j. treba zavoalť ~reverse(a.begin(), a.end())~.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-02a" onclick="ukaz('02a')"> riešenie </button>
+<div class="hidden" id="riesenie-02a">
+
+@02a@
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+Úloha je rovnaká, ako v prvej časti, ale na to, aby riadok bol dobrý, môže mať jedno miesto, kde podmienka neplatí. Toto je zdanlivo malá zmena, ale celkom rozhodí náš prístup z prvej časti: napr.
+ak sa prvé dva prvky rovnajú, riadok ešte môže byť dobrý, porovnaním prvých dvoch prvkov nezistíme, či má byť riadok rastúci alebo klesajúci a pod. Hlavná výzva v tejto úlohe je nezamotať sa.
+
+Na to je dobré použiť vlastné funkcie (viď. kapitola 10). TL;DR: 
+
+@02_2@
+
+</p>
+
+<p>
+V tomto programe je premenná ~a~ <q>globálna</q>, t.j. viditeľná z hlavného programu aj zo všetkých funkcií. Premenná ~x~ je <q>lokálna</q> vo funkcii ~pridaj~. Funkcia ~pridaj~ má dva parametre,
+preto sa volá ~pridaj(2, 3)~: pri volaní sa jej parameter ~i~ nastaví na 2 a ~j~ na 3. Program vypíše ~47~ a potom ~43~.
+</p>
+
+<p>
+Takže sa dá napr. spraviť funkcia, ktorá skontroluje, či je riadok dobrý, ak sa neberie do úvahy $i$-ty prvok, a potom sa v cykle táto funkcia volá pre všetky možné $i$.
+</p>
+
+
+<button class="btn btn-primary btn-small" id="button-02b" onclick="ukaz('02b')"> riešenie </button>
+<div class="hidden" id="riesenie-02b">
+
+<p>
+V mojom riešení som si spravil niekoľko funkcií: ~nxt(int i, int skip)~ urobí ~i++~, ale s tým, že treba preskakovať hodnotu ~skip~. S jej pomocou funkcia ~check(int skip)~ zistí,
+či riadok spĺňa podmienky pre rastúci riadok, ak sa vyhodí prvok ~skip~. No a napokon ~tst()~ volá ~check(i)~ pre všetky ~i~.
+</p>
+
+@02b@
+
+</div>
+

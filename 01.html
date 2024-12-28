@@ -1,0 +1,98 @@
+<h2>Prvý deň</h2>
+
+<a href="https://adventofcode.com/2024/day/1" target=_blank>zadanie: Historian Hysteria</a>
+
+<hr/>
+<h3>Prvá časť</h3>
+<p>
+Potrebujeme zo vstupu prečítať dva rovnako dlhé zoznamy, ktoré sú zapísané vo viacerých riadkoch postupne prvý prvok z oboch zoznamov, na ďalšom riadku druhý prvok, potom tretí atď. 
+Takže zoznamy $[3,4,2,1,3,3]$ a $[4,3,5,3,9,3]$ by boli na vstupe zapísané takto:
+
+<pre>
+3   4
+4   3
+2   5
+1   3
+3   9
+3   3
+</pre>
+
+Potom potrebujeme porovnať najmenšie číslo z prvého zoznamu s najmenším číslom z druhého zoznamu, druhé najmenšie s druhým najmenším atď.
+</p>
+
+<p>
+Na prácu so zoznamami premenlivej veľkosti sa hodí typ ~vector~ (viac detailov o ňom v kapitole 21), ktorý sa aktivuje pomocou ~#include <vector>~. 
+~vector~ je zoznam, ktorý obsahuje premenné hocijakého, ale rovnakého typu. 
+Tento typ sa zadáva v <q>zobáčikových</q> zátvorkách: napr. ~vector<int> a;~ vyrobí premennú ~a~, ktorá bude zoznam obsahujúci prvky typu ~int~.
+Kompletná referencia je <a href="https://en.cppreference.com/w/cpp/container/vector" target=_blank>tu</a>.
+</p>
+
+<p>
+Na prečítanie vstupu sa dá použiť operátor ~>>~ zo vstupného streamu ~cin~. Dôležité je, že pri čítaní sa preskakujú medzery a konce riadkov, takže ak mám premenné
+~int x, y;~ tak ~cin >> x >> y;~ prečíta zo vstupu dve čísla (nech by medzi nimi bolo koľkokoľvek medzier) a uloží ich do premenných ~x~ a ~y~. 
+</p>
+
+<p>
+Navyše ~>>~ je aj hodnota, ktorá sa dá použiť ako ~bool~ a indikuje, či sa podarilo prečítať. Takže častý pattern na čítanie vstupu je
+
+@whilecin@
+
+</p>
+
+<p>
+Na uloženie prvku na koniec zoznamu sa dá použiť metóda (viď. kapitola 20) ~push_back~ z typu ~vector~: ak mám napr. ~vector<int> a;~ môžem napísať ~a.push_back(47);~
+Koľko prvkov je práve v zozname uložených sa dá zistiť volaním ~a.size()~ a vektor sa dá vyprázdniť volaním ~a.clear()~. K prvkom uloženým vo vectore sa dá pristupovať
+cez hranaté zátvorky napr. ~a[0]~ je prvý prvok, ~a[a.size()-1]~ posledný. Posledný prvok má aj skratku ~a.back()~ (takže sa dá nap.r povedať ~a.back()=42;~.
+Posledný prvok sa dá vymazať pomocou ~a.pop_back()~.
+</p>
+
+<p>
+Tu je navyše drobný detail: ~a.size()~ nevráti hodnotu typu ~int~, ale ~unsigned long~ (viď. kapitola 7); je dobré si ju pred použitím  pretypovať na ~int~ volaním ~(int)a.size()~
+(inak napr. porovnanie ~-1 < a.size()~ vráti ~false~, lebo ~unsigned long~ je <q>väčší</q> typ, a tak sa kompilátor  snaží -1 pretypovať na ~unsigned long~, čo je nejaké absurdne veľké
+  kladné číslo).
+</p>
+
+<p>
+Nie je to síce nutné (dá sa to vyriešiť pomocou podmienky v príkaze ~if~), ale príjemné je poznať funkciu ~abs(x)~, ktorá vráti absolútnu hodnotu z čísla ~x~.
+</p>
+
+<p>
+Posledná vec, ktorá sa oplatí vedieť, je, že v knižnici ~algorithm~ (aktivuje sa pomocou ~#include <algorithm>~) je funckia (o funkciách viď. kapitola 10) ~sort()~, ktorá utriedi zoznam.
+Nateraz jej volanie môže byť trochu mätúce, triedi totiž časť zoznamu medzi dvoma iterátormi (viď. kapitola 24). TL;DR: na utriedenie zoznamu ~a~ sa dá zavolať ~sort( a.begin(), a.end() );~
+</p>
+
+<button class="btn btn-primary btn-small" id="button-01a" onclick="ukaz('01a')"> riešenie </button>
+<div class="hidden" id="riesenie-01a">
+
+Celé riešenie môže vyzerať takto:
+
+@01a@
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+V druhej časti je (tak ako v každom dni)  vstup rovnaký ako v prvej časti. Úlohou ale je pre každý prvok z prvého zoznamu zistiť, koľkokrát sa nachádza v druhom zozname.
+</p>
+
+<p>
+V C++ sú dva druhy dátových štruktúr, ktoré sa tu dobre dajú využiť: ~map~ (~#include <map>~, viď. kapitola 27)  a ~unordered_map~ (~#include <unordered_map>~, viď. kapitola 32). 
+Obe fungujú podobne ako ~dict~ v pythone, t.j. umožňujú ukladať dvojice $\lt key,\; value \gt$. Sú medzi nimi rozdiely, ku ktorým sa možno časom dostaneme, nateraz stačí vedieť, 
+že napr. ~map<string, int> a;~ vyrobí mapu s kľúčmi typu ~string~ a hodnotami typu ~int~. Pristupovať k prvkom sa dá podobne ako do poľa pomocou ~[]~, t.j. ~a["krtko"]~ je hodnota
+prislúchajúca ku kľúču ~"krtko"~. Ak kľúč ~"krtko"~ v mape nie je, volanie ~a["krtko"]~ ho vyrobí a bude mať hodnotu ~0~.
+Úplná referencia je <a href="https://en.cppreference.com/w/cpp/container/map" target=_blank>map</a> a <a href="https://en.cppreference.com/w/cpp/container/unordered_map">unordered_map</a>.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-01b" onclick="ukaz('01b')"> riešenie </button>
+<div class="hidden" id="riesenie-01b">
+
+<p>
+Prvý zoznam si prečítame do ~vector<int> a;~, pre druhý si ale vyrobíme ~unordered_map<int,int> b;~ kde pre každý kľúč bude zapamätané, koľkokrát sa v druhom zozname nachádza.
+</p>
+
+@01b@
+
+</div>
+
