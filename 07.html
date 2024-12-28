@@ -1,0 +1,104 @@
+<h2>Siedmy deň</h2>
+
+<a href="https://adventofcode.com/2024/day/7" target=_blank>zadanie: Bridge Repair</a>
+
+<hr/>
+<h3>Prvá časť</h3>
+<p>
+
+<p>
+Úlohou je vyskladať cieľové číslo tak, že sa medzi zadanú postupnopsť čísel vkladajú operátory ~+~ a ~*~.
+Pohľad do vstupu ukáže, že čísla, ktoré treba vyrobiť sú veľmi veľké, ale treba spracovať len $850$ riadkov 
+a v každom je najviac $12$ čísel, t.j. treba vložiť najviac $11$ operátorov. Keďže na každej pozícii máme dve možnosti,
+dokopy je to $2^{11}=2048$ možností, čo je v pohode na to, aby sme ich všetky vyskúšali.
+</p>
+
+<p>
+Keďže štandardný ~int~ má (spravidla) veľkosť $32$ bitov, najväčšie číslo, ktoré si vie uložiť (viď. kapitola 7) je $2^{31}-1=2147483647$.
+Keď potrebujeme väčšie čísla, dá sa použiť napr. typ ~int64_t~ definovaný v knižnici ~<cstdint>~. Ten má $64$ bitov, a teda najväčšie číslo je
+$2^{63}-1=9223372036854775807$. Aby sme nemuseli všade vypisovať dlhé meno typu, môžeme použiť <q>alias</q>: ~using Int = int64_t;~
+Potom môžeme používať ~Int~ namiesto ~int64_t~.
+</p>
+
+
+<button class="btn btn-primary btn-small" id="button-07a" onclick="ukaz('07a')"> riešenie </button>
+<div class="hidden" id="riesenie-07a">
+
+<p>
+Jednu možnosť rozmiestnenia operátorov si viem zapísať ako postupnosť núl a jednotiek: $0$ znamená ~+~, $1$ znamená ~*~. Ak mám $n$ čísel, potrebujem vyskúšať všetky postupnosti $n-1$
+núl a jednotiek. To sa dá jednoducho pomocou bitových operácií. Ak si zoberiem čísla od $0$ po $2^{n-1}-1$ v binárnom zápise, vidno, že sa v nich vystriedjú všetky postupnosti núl a jendotiek.
+Napr. ak $n=5$, mám
+</p>
+
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \usetikzlibrary{calc,arrows.meta}
+  \begin{tikzpicture}[
+      yscale=0.8, %1.1
+      xscale=0.8,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round
+    ]
+
+  
+  \foreach\i in {0,...,15} {
+    \node[white] at (-2,-\i) {\tt\i};
+    \foreach\j in {0,...,3} {
+      \pgfmathtruncatemacro{\val}{mod(int(\i/2^\j),2)}
+      \def\clr{green}
+      \if\val1\def\clr{primary}\fi
+      \node[\clr] at (4-\j,-\i) {\tt\val};
+    }
+  }
+
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+<p>
+Preto môžem napísať
+</p>
+
+@07a@
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+V druhej časti je to podobné ale je pridaný ešte tretí operátor. Počet možností tak stúpne z $2^{11}=2048$ na $3^{11}=177\,147$, čo je ešte stále ako-tak v poriadku na to, aby sme skúšali všetky možnosti.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-07b" onclick="ukaz('07b')"> riešenie </button>
+<div class="hidden" id="riesenie-07b">
+
+<p>
+Najprv si treba rozmyslieť, ako funguje novopridaný operátor $a||b$. Keby mapríklad $b$ bolo dvojciferné číslo, tak $a||b = a\cdot100+b$. Inými slovami, ak $m$ je najmenšia mocnina $10$ taká,
+že $m\gt b$, tak $a||b=a\cdot m+b$. Takže môžem napísať
+</p>
+
+@07_1@
+
+<p>
+Keďže teraz mám vždy tri možnosti, bitové operácie prestávajú byť príjemné. Ale stále pletí, že všetky možnosti viem prejsť tak, že prejdem všetky $n-1$-ciferné čísla v trojkovej sústave. Teraz si
+ich ale budem reprezentovať nie v jednom čísle, ale v poli cifier (t.j. budem mať ~vector<int> c;~ v ktorom budú cifry $0$, $1$, alebo $2$). Stačí mi začať zo samých núl a vždy prirátať jednotku.
+Ako sa prirátava jednotka? Keď zápis čísla končí dvojkami, tie sa zmenia na nuly a k prvej nedvojkovej cifre sa pripočíta jednotka. Takže na inkrementovanie mám
+</p>
+
+@07_2@
+
+<p>
+No a už to ostáva len dať celé dokopy
+</p>
+
+@07b@
+
+</div>
+

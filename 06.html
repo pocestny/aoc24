@@ -1,24 +1,117 @@
-<h2>Druhý deň</h2>
+<h2>Šiesty deň</h2>
 
-<a href="https://adventofcode.com/2024/day/2" target=_blank>zadanie: Red-Nosed Reports</a>
+<a href="https://adventofcode.com/2024/day/6" target=_blank>zadanie: Guard Gallivant</a>
 
 <hr/>
 <h3>Prvá časť</h3>
+
 <p>
+Toto je jeden z hlavolamov, ktoré sa týkajú chodenia po mape. Zvyčajne takých úloh býva viacero, a preto, hoci to nie je na riešenie tejto úlohy nevyhnutné, 
+je teraz možno dobrý čas na nejaké prípravné práce, ktoré
+sa budú hodiť viackrát.
+</p>
 
-<button class="btn btn-primary btn-small" id="button-02a" onclick="ukaz('01a')"> riešenie </button>
-<div class="hidden" id="riesenie-02a">
+<p>
+V C++ sa dajú vyrábať vlastné typy pomocou konštrukcie ~struct~ (kapitola 15). V našom prípade budeme často potrebovať pracovať s pozíciou v 2D mriežke v tvare $[riadok,stĺpec]$.
+Aby sme mali veci pekne pokope, môžeme spraviť
+</p>
 
+@06_1@
+
+<p>
+Tým sa spraví nový typ, ktorý sa volá ~Pos~. Premenná typu ~Pos~  sa vyrobí rovnako ako pre iné typy, napr. ~Pos a;~. Každá premenná typu ~Pos~ obsahuje dve čísla typu ~int~, ku ktorým sa dá
+pristupovať pomocou bodky, napr. ~a.r~ Rovnako si takéto premenné vieme uložiť do vecotra, napr. ~vector<Pos> z;~ a potom môžeme písať napr. ~z[0].s~
+</p>
+
+<p> 
+Do premennej typu ~Pos~ vieme priraďovať aj naraz pomocou kučeravých zátvoriek: ~Pos a = {3, 4};~ je rovnaké, ako ~a.r = 3; a.s = 4;~ (veci v zátvorkách sú v rovnakom poradí ako pri definícii ~Pos~).
+</p>
+
+<p>
+Často bude treba simulovať pohyb 4 smermi: doprava, dole, doľava, hore. Pohnutie sa príslušným smerom vždy znamená zmeniť riadok alebo stĺpec o $\pm1$. Na to sa hodí spraviť si
+~const vector<Pos> dir{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};~ Teraz napr. ~dir[2]=={0, -1}~ je smer doľava: ostávame na tom istom riadku a stĺpec je o 1 menší. To slovo ~const~ na 
+začiatku hovorí že hodnoty v ~dir~ sa nesmú meniť. Ak by som na to zabudol a chcel omylom urobiť napr. ~dir[2].s=7;~, kompiláto zahlási chybu.
+</p>
+
+<p>
+Hodilo by sa spraviť funkciu ~Pos scitaj(Pos a, Pos b) { return {a.r + b.r, a.s + b.s}; }~, ktorá vráti novú pozíciu, v ktorej každá zložka je súčtom. Potom môžem písať napr.
+~a = scitaj(a, dir[2]);~ Ešte pohodlnejšie sa to dá napísať pomocou <q>predefinovania operátora</q> (kapitola 22). Operátory (napr. ~+~), sú v podstate obyčajné funkcie, iba sa zapisujú
+v tzv. <q>infixovom tvare</q>: meno funkcie je medzi jej parametrami. Niektoré sa dajú aj predefinovať, takže namiesto funkcie ~scitaj~ môžem urobiť
+~Pos operator+(Pos a, Pos b) { return {a.r + b.r, a.s + b.s}; }~ a písať prirodzenejšie ~a = a + dir[2];~
+</p>
+
+<p>
+Podobne sa hodí predefinovať operátory ako ~==~ a ~!=~. Ak chcem niekedy použiť ~Pos~ ako kľúč do ~map~, t.j mať napr. ~map<Pos,int> m;~  (čo sa môže hodiť), potrebujem aj operátor ~<~
+(ak by som chcel použiť ~unordered_map~, potrebujem aj niečo naviac, viď. kapitola 32). 
+</p>
+
+<p> 
+No a napokon pre vrchol pohodlia môžem spraviť aj operátor ~+=~, aby som mohol písať ~a += dir[2];~. Ten sa definuje trochu inak, je to totiž <q>metóda</q> typu ~Pos~ (viď. kapitola 20).
+Typ môže mať okrem premenných, ku ktorým sa pristupuje pomocou bodky aj vlastné funkcie, ku ktorým sa tiež pristupuje pomocou bodky (napr. ~vector~ má svoju metódu ~push_back~, takže ak máme
+~vector<int> a;~ môžeme písať ~a.push_back(2);~ a zavolá sa funkcia ~push_back()~ s parametrom ~2~, ktorá pracuje na interných premenných vectora ~a~).
+Metóda, pretože sa spustí na jednej hodnote, môže pristupovať k premenným svojho typu. Celý typ ~Pos~ vyzerá takto:
+</p>
+
+@06_2@
+
+<p>
+Tento kus programu si viem nakopírovať vždy, keď treba pracovať s pozíciami, a pracuje sa mi pohodlnejšie.
+</p>
+
+<p>
+V prvej časti stačí odsimulovať trasu strážnika, až kým nevyjde von, a zapamätať si, po koľkých políčkach prešiel.
+</p>
+
+
+<button class="btn btn-primary btn-small" id="button-06a" onclick="ukaz('06a')"> riešenie </button>
+<div class="hidden" id="riesenie-06a">
+
+<p>
+Sprvím priamočiaru simuláciu. Mapu si budem pamätať ako ~vector<string> a;~. Pozícia strážnika bude ~Pos p;~. Zároveň si budem pamätať
+jeho smer ~int d~ ako index do poľa ~dir~. Na začiatku je otočený hore, takže ~int d = 3;~. Jeden krok dopredu znamená spraviť ~p += dir[d]~
+a otočiť sa doprava znamená ~d = (d + 1) % 4~. Pre pohodlie si spravím pomocnú funkciu ~bool valid(Pos p) {...}~ ktorá zistí, či je pozícia v mape alebo mimo.
+Napokon budem mať ~map<Pos,bool> m~ kde si budem pamätať pozície, na ktorých som bol. Celé to potom vyzerá takto:
+</p>
+
+@06a@
 
 </div>
 
 <hr/>
 <h3>Druhá časť</h3>
 
+<p>
+V druhej časti treba zistiť, na koľko miest sa dá pridať prekážka tak, aby strážnik chodil stále dokola a nikdy nevyšiel.
+Tu si stačí uvedomiť, že ak príde druhýkrát na políčko, na ktorom už bol, ešte to nemusí znamenať, že sa zacyklí, ale ak tam príde dvakrát v rovnakom smere, tak je určite zacyklený.
+A platí to aj naopak, ak sa zacyklí, tak sa určite objaví na jednom políčku dvakrát v rovnakom smere. Takže stačí skúšať všetky možnosti, kam položiť prekážku, a pre každú možnosť
+sledovať, či strážnik vyjde von alebo bude dvakrát na jednom políčku v rovnakom smere.
+</p>
 
-<button class="btn btn-primary btn-small" id="button-02b" onclick="ukaz('02b')"> riešenie </button>
-<div class="hidden" id="riesenie-02b">
+<button class="btn btn-primary btn-small" id="button-06b" onclick="ukaz('06b')"> riešenie </button>
+<div class="hidden" id="riesenie-06b">
 
+<p>
+Na jednu simuláciu spravím funkciu ~bool skus(Pos x)~, ktorá skúsi na pozíciu ~x~ dať prekážku a potom odsledovať, či strážnik bude chodiť do kruhu. Na to, aby som si pamätal, v ktorom smere
+som bol na danom políčku, sa dobre hodia bitové operácie (viď. str. 23). Budem mať ~map<Pos,int> m~, pričom pre nejakú pozíciu ~p~ bude mať ~m[p]~ nastavené tie bity, v ktorých smeroch
+som na tom políčku bol: napr. ~m[p]==5~ znamená, že na políčku ~p~ som už bol v smeroch $0$ (teda doprava) a $2$ (teda doľava), lebo $5=2^0+2^2$ je v dvojkovej sústave  ~101~, a to znamená, že má
+nastavené bity číslo $0$ a $2$.
+</p>
+
+@06_3@
+
+<p>
+Keď som ~skus~ pustil na každé políčki, na ktorom nie je prekážka, tak to fungovalo, ale bolo to dosť pomalé (i keď jeden by mohol povedať, že <q>good enough</q>): bez optimalizcie
+v kompilátore to bežalo 
+$56.846$s, so zapnutou optimalizáciou (prepínač ~-O3~) $9.361$s.
+</p>
+
+<p>
+Dá sa to trochu urýchliť, na základe pozorovania, že prekážku nemá zmysel postaviť na políčko, kade strážnik v pôvodnej mape neprejde. Takže som si najprv raz spustil simuláciu, skopíroval 
+políčka, na ktorých strážnik bol a púšťal simuláciu iba pre ne. Bez optimalizácie to potom išlo $10.966$s a s optimalizáciou $2.016$s, čo už je okay-ish.
+Výsledný program je potom takýto:
+</p>
+
+@06b@
 
 </div>
 

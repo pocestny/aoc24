@@ -15,7 +15,7 @@ int main() {
   sort(b.begin(), b.end());
 
   int res = 0;                             // sem si budeme ukladať výsledok
-  for (int i = 0; i < (int)a.size(); i++)  // prejdeme v sykle cez celý zoznam
+  for (int i = 0; i < (int)a.size(); i++)  // prejdeme v cykle cez celý zoznam
     res += abs(a[i] - b[i]);               // prirátame absolútnu hodnotu rozdielu
 
   cout << res << endl;  // nakoniec vypíšeme výsledok

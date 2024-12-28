@@ -82,7 +82,20 @@ V C++ sú dva druhy dátových štruktúr, ktoré sa tu dobre dajú využiť: ~m
 Obe fungujú podobne ako ~dict~ v pythone, t.j. umožňujú ukladať dvojice $\lt key,\; value \gt$. Sú medzi nimi rozdiely, ku ktorým sa možno časom dostaneme, nateraz stačí vedieť, 
 že napr. ~map<string, int> a;~ vyrobí mapu s kľúčmi typu ~string~ a hodnotami typu ~int~. Pristupovať k prvkom sa dá podobne ako do poľa pomocou ~[]~, t.j. ~a["krtko"]~ je hodnota
 prislúchajúca ku kľúču ~"krtko"~. Ak kľúč ~"krtko"~ v mape nie je, volanie ~a["krtko"]~ ho vyrobí a bude mať hodnotu ~0~.
-Úplná referencia je <a href="https://en.cppreference.com/w/cpp/container/map" target=_blank>map</a> a <a href="https://en.cppreference.com/w/cpp/container/unordered_map">unordered_map</a>.
+To sa niekedy dá využiť, ale treba byť opatrný, keď sa testuje ~map.size()~ čo, podobne ako pri vectore vráti počet vložených hodnôt. Napr.
+</p>
+
+@01_1@
+
+<p>
+vypíše ~1~ a ~2~, lebo pri teste v píkaze ~if~ sa do mapy vloží hodnota ~m[4]=false~. Na zistenie, či sa nejaký prvok v mape nachádza (bez toho, aby sa tam pridal), sa dá použiť
+~if (m.find(4) != m.end()) { ... m[4] je v mape ...} ~. Funkcia ~find()~ vráti iterátor na daný prvok (nech už je to čokoľvek), ak sa prvok v mape nachádza, 
+alebo špeciálny iterátor ~m.end()~, ak nie.
+</p>
+
+<p>
+Úplná referencia pre ~map~ je <a href="https://en.cppreference.com/w/cpp/container/map" target=_blank>tu</a> a pre ~unordered_map~
+<a href="https://en.cppreference.com/w/cpp/container/unordered_map">tu</a>.
 </p>
 
 <button class="btn btn-primary btn-small" id="button-01b" onclick="ukaz('01b')"> riešenie </button>
