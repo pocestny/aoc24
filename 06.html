@@ -30,7 +30,7 @@ Do premennej typu ~Pos~ vieme priraďovať aj naraz pomocou kučeravých zátvor
 <p>
 Často bude treba simulovať pohyb 4 smermi: doprava, dole, doľava, hore. Pohnutie sa príslušným smerom vždy znamená zmeniť riadok alebo stĺpec o $\pm1$. Na to sa hodí spraviť si
 ~const vector<Pos> dir{{0, 1}, {1, 0}, {0, -1}, {-1, 0}};~ Teraz napr. ~dir[2]=={0, -1}~ je smer doľava: ostávame na tom istom riadku a stĺpec je o 1 menší. To slovo ~const~ na 
-začiatku hovorí že hodnoty v ~dir~ sa nesmú meniť. Ak by som na to zabudol a chcel omylom urobiť napr. ~dir[2].s=7;~, kompiláto zahlási chybu.
+začiatku hovorí, že hodnoty v ~dir~ sa nesmú meniť. Ak by som na to zabudol a chcel omylom urobiť napr. ~dir[2].s=7;~, kompiláto zahlási chybu.
 </p>
 
 <p>

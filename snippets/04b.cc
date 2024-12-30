@@ -14,6 +14,9 @@ char get(int i, int j) {
 // zistím, či sa z pozície [i,j] vyskytuje MAS alebo SAM v smere doprava alebo doľava dole
 bool match(int i, int j, int dj) {     
   for (string p : {"MAS", "SAM"}) {  // pre tento zápis pozri str. 129
+                                     // v tomto prípade  {"MAS", "SAM"} je tzv.
+                                     // brace-enclosed initializer list
+                                     // cez ktorý sa dá iterovať podobne ako cez vector
     bool got = true;
     for (int k = 0; k < 3; k++)
       if (get(i + k, j + (k * dj)) != p[k]) got = false;

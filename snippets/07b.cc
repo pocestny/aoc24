@@ -36,8 +36,8 @@ int main() {
     while (ss >> x) a.push_back(x);
     int n = a.size();
     c.clear();               // vyčistím c
-    c.resize(n - 1, 0);      // tento zápis upraví počet prvkov na n-1 (ak ich predtým, bolo viac, 
-                             // zvyšneé zahodí, ak ich bolo menej, doplní ich nulami)
+    c.resize(n - 1, 0);      // tento zápis upraví počet prvkov na n-1 (ak ich predtým bolo viac, 
+                             // zvyšné zahodí, ak ich bolo menej, doplní ich nulami)
                              // keďže som ho predtým vyprázdnil, teraz v ňom budú samé nuly
     bool ok = false;
     do {                     // cyklus v ktorom skúšam všetky možnosti

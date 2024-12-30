@@ -194,6 +194,19 @@ h2, h3 {
   padding-top: calc(var(--global-space)* 2);
 }
 
+.two-col {
+  display: grid;
+  grid-gap: 1.4em;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto;
+  padding:0px;
+  margin:0px;
+}
+
+.col{
+  width:100%!important;
+}
+
 .grid-menu aside {
   position: sticky;
   top: calc(var(--global-space) * 2);

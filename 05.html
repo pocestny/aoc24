@@ -276,7 +276,7 @@ Ostáva vymyslieť, ako to naprogramovať.
 
 <p>
 Pre každý riadok si najprv zapamätám, ktoré stránky v ňom sú. Aby som k nim vedel pohodlne pristupovať, budem mať ~map<int, bool> jetu;~ Keď mám riadok uložený vo vecotre ~r~, 
-naplním si mapu ~for (int x : r) jetu[x] = true;~ využijúc to, že ak som nejakú hodnotu do mapy nevložil, následný test napr. ~jetu[-5]~ vráti defaultnú hodnotu, ktoru je ~false~.
+naplním si mapu ~for (int x : r) jetu[x] = true;~ využijúc to, že ak som nejakú hodnotu do mapy nevložil, následný test napr. ~jetu[-5]~ vráti defaultnú hodnotu, ktorou je ~false~.
 (Keď sa pozriem do vstupu, vidím, že všetky stránky sú dvojciferné čísla, takže rovnako dobre by mi poslúžilo  ~vector<bool> jetu(100,false);~ čo vyrobí vector typu ~bool~ dĺžky 100
 a nastaví jeho hodnoty na ~false~. Napĺňanie ~for (int x : r) jetu[x] = true;~ by bolo rovnaské a ani nič ďalej by sa nezmenilo).
 </p>
