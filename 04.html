@@ -43,19 +43,19 @@ Teraz môžem používať ~get(i,j)~ a nestarať sa o to, či ~i~ a ~j~ majú sp
       line cap=round
     ]
   
-  \fill[fill=white] (0,0) rectangle (6,6);  
+  %\fill[fill=white] (0,0) rectangle (6,6);  
   \foreach \dx in {0,...,3} {
-    \fill[fill=yellow!40!white] (1+\dx,1+\dx) rectangle ++(1,1);
+    \fill[fill=primary!40!black] (1+\dx,1+\dx) rectangle ++(1,1);
   }
 
-  \draw (0,0) grid (6,6);  
+  \draw[white] (0,0) grid (6,6);  
 
 
   \foreach \line[count=\i] in {{A,D,E,S,T,E},{F,I,D,E,S,L},{E,S,L,A,E,T},{I,T,M,R,I,U},{M,X,P,A,N,T},{E,S,V,E,N,I}} {
     \foreach \v[count =\j] in \line {
       \pgfmathsetmacro{\y}{6.5-\i}
       \pgfmathsetmacro{\x}{\j-0.5}
-      \node at (\x,\y) {\v};
+      \node[white] at (\x,\y) {\v};
     }
   }
 

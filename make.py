@@ -37,7 +37,7 @@ out.write("""
 <li onclick="set_priklad('00')"><a href="#">úvod</a></li>          
 """)
 
-nDays=8
+nDays=9
 for i in range(1,nDays+1):
     out.write('<li onclick="set_priklad(\'{id:02d}\')"><a href="#"> {id:02d} </a></li>'.format(id=i))
 
