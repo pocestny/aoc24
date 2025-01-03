@@ -38,7 +38,7 @@ int main() {
   for (auto& x : ants) {            // všetky typy antén
     int n = x.second.size();        
     for (int i = 0; i < n; i++)
-      for (int j = 0; j < n; j++)  // všetky dvojice antéd daného typu
+      for (int j = 0; j < n; j++)  // všetky dvojice antén daného typu
         if (i != j) {
           Pos a = x.second[i], b = x.second[j], c = 2 * b - a;
           if (valid(c)) res[c] = true;
