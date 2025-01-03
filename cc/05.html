@@ -299,10 +299,22 @@ na koniec ~sorted~. Zároveň znížim indegree všetkým stránkam z ~out[u]~ (
 
 <button class="btn btn-primary btn-small" id="button-05b2" onclick="ukaz('05b2')"> úplne celý program </button>
 <div class="hidden" id="riesenie-05b2">
-
 @05b@
 </div>
 
-
 </div>
+
+<p style="padding-top:35px;">
+Ak sa pozrieme do vstupu (môjho, ale predpokladám, že ostatné sú podobné), tak čísla stránok sú všetky dvojciferné a pre každú dvojicu je priamo povedané jej utriedenie jedným alebo druhým smerom.
+To nám umožní program značne zjednodušiť. Jednak stačí mať dvojrozmerné pole ~bool~ veľkosti $100\times100$, v ktorom pre každú dvojicu $x$, $y$ bude ~true~, ak $x$ musí byť pred $y$.
+Potom stačí každý prečítaný riadok utriediť, ale namiesto <q>normálneho</q> triedenia, t.j. podľa veľkosti, využijeme tretí, nepovinný, parameter funkcie ~sort~. Ten reprezentuje tzv. 
+<q>porovnávaciu funkciu</q>: vždy keď pri triedení treba zistiť, či je číslo $x$ menšie ako $y$, namiesto porovnania ~x < y~ sa zavolá ~cpm(x, y)~. Porovnávacia funkcia
+teda vracia tym ~bool~ a ~cmp(x,y)~ vráti ~true~, ak ~x~ je v usporiadaní skôr, ako ~y~ (viac o tom, ako môže byť funkcia parametrom inej funkcie pozri kapitolu 25).                    
+</p>
+
+<button class="btn btn-primary btn-small" id="button-05b2s" onclick="ukaz('05b2s')"> zjednodušenýý program </button>
+<div class="hidden" id="riesenie-05b2s">
+@05b2@
+</div>
+
 
