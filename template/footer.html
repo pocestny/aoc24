@@ -1,0 +1,25 @@
+<div style="padding-top:35px;"></div> 
+</div> <!-- /container -->
+
+<script src="./js/highlight.min.js"></script>
+
+<script>
+  function ukaz(num) {
+    document.getElementById("button-"+num).classList.add('hidden');
+    document.getElementById("riesenie-"+num).classList.remove('hidden');
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+      //const elems = document.getElementsByClassName("language-cpp");
+      const elems = document.querySelectorAll(".language-cpp,.language-python")
+      for (let i = 0; i < elems.length; i++) { 
+          window.hljs.highlightElement(elems[i]);
+          console.log(elems[i])
+      }
+
+  });
+</script>
+</body>
+</html>
+
+

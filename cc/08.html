@@ -1,0 +1,180 @@
+<h3>Prvá časť</h3>
+<p>
+Najprv si treba všimnúť, že rôzne púsmenká sa navzájom nijak neovplyvňujú. Je to teda ako keby sme mali v jednej vstupnej mape pokop niekoľko rôznych vstupov: pre každé písmeno jeden.
+Druhá vec je, že budeme pracovať so súradnicami, a tak nám zase príde vhod copy-paste kus s definíciou ~Pos~. Bude sa hodiť aj dorobiť ~Pos operator-(Pos a, Pos b)~ podobne ako 
+existujúci ~operator+~ a do zásoby možno aj ~Pos operator*(int a, Pos b)~ nejak takto
+~Pos operator*(int a, Pos b) {return {a* b.r, a * b.s};}~
+</p>
+
+<p>
+Na začiatok môžeme vstup čítať po riadkoch (cez ~getline~) do stringu a zistené pozície antén
+si ukladať do globálnej mapy ~map<char, vector<Pos>> ants;~ pre každý znak ~'c'~ je
+~ants['c']~ zoznam pozícií antén s písmenkom ~'c'~.
+Na to, aby sme rozlíšili, čo je a čo nie je anténa, je príjemná funkcia ~isalnum(char)~ z knižnice
+~cctype~ (obsahuje niekoľko podobných funkcií, popis je <a href="https://en.cppreference.com/w/cpp/header/cctype" target=_blank>tu</a>). 
+<p>
+
+<button class="btn btn-primary btn-small" id="button-08a-vstup" onclick="ukaz('08a-vstup')">
+  čítanie vstupu </button>
+<div class="hidden" id="riesenie-08a-vstup">
+
+@08_1@
+
+</div>
+
+<p>
+Teraz treba vyriešiť, ako prechádzať mapu. Pre vector, napr. ~vector<int> a~, vieme
+písať ~for (int x : a) { ... }~. Rovnako sa to dá urobiť aj pre mapu, ale otázka je, aký typ 
+by malo mať ~x~. Je šablóna (viď. kapitola 21)  ~pair~, ktorá je dfinovaná takto:
+</p>
+
+@08_2@
+
+<p>
+Takže napr. ~pair<int, string> x~ je premenná, ktorá má ~int~ zložku ~x.first~ a ~string~ zložku 
+~x.second~. V našom prípade pre  ~map<char, vector<Pos>> ants;~ môže byť takto:
+</p>
+
+@08_3@
+
+<p>
+t.j. cez ~map~ sa iteruje premennou typu ~pair~, kde prvý typ je typ kľúča a druhý typ je typ hodnoty.
+Aky nebolo treba vypisovať dlhé názvy typov, je v C++ označenie ~auto~. To nie je nejaký špeciálny typ, 
+ale výzva pre kompilátor, aby sa pokúsil zistiť, aký typ bude mať táto premenná. Keď sa mu to nepodarí, vyhlási chybu. V našom prípade, ak napíšeme ~for(auto x : ants)~, kompilátor zistí, že ~x~ musí byť typu
+~pair<char, vector<Pos>>~.
+</p>
+
+<p>
+Napokon je tu už spomenuté ~&~: V konštrukcii ~for (auto x : ants)~ sa vždy celý zoznam
+skopíruje do ~x.second~ a pracuje sa s jeho kópiou. Pri ~for (auto &x : ants)~ je ~x.second~
+priamo ten zoznam, čo je uložený v mape. Na porovnanie sú tu dva (dosť podobné) programy:
+</p>
+
+<div class="two-col">
+<div class="col">
+
+  @08_4a@
+
+</div>
+
+<div class="col">
+
+  @08_4b@
+
+</div>
+</div> <!-- /twocol -->
+
+<p>
+Ten vľavo mení lokálnu kópiu, preto dvakrát vypíše to isté: 
+~12 krab! 42 kapybara! 12 krab! 42 kapybara!~ Ten vpravo mení priamo veci v mape, preto
+vypíše
+~12 krab! 42 kapybara! 12 Sra! 42 Sapybar!~
+
+</p>
+
+<button class="btn btn-primary btn-small" id="button-08a" onclick="ukaz('08a')"> riešenie </button>
+<div class="hidden" id="riesenie-08a">
+
+<p>
+Budem predpokladať, že vstup mám už v ~map<char, vector<Pos>> ants;~ Prejdem zvlášť každý typ antény a
+vyskúšam všetky dvojice antén. Ak mám anténu ~a = {a.r, a.s}~ a anténu ~b = {b.r, b.s}~, tak potrebujem zistiť
+pozíciu na priamke, ktorá ich spája a je od ~a~ v dvojnásobnej vzdialenosti (opačná strana sa vyrieši, keď zoberiem tú istú
+dvojicu v opačnom poradí).
+</p>
+
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=1.1,
+      xscale=1.1,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=white,circle,fill=primary}
+    ]
+
+  \coordinate (na) at (1,7);
+  \coordinate (nb) at (5,4);
+  \coordinate (nc) at (9,1);
+  
+
+  \begin{scope}[shift={(-1,-1)}]
+   \draw[primary!50!black] (0.5,0.5) grid (11.5,9.5);
+  \end{scope}
+  
+  \foreach \i in {0,...,10}{
+  \foreach \j in {0,...,8}{
+  \fill[fill=primary!50!black] (\i,\j) circle (0.09);
+  }}
+
+  \draw[orange] (-1,7) -- (1,7) (-1,4) -- (5,4) ;
+  \draw[yellow] (1,-1) -- (1,7) (5,-1) -- (5,4);
+  \draw[green] (-1,1) -- (9,1) (9,-1) -- (9,1);
+
+  \draw[thick, orange,brace = 1ex /mirror] (-1,7) -- node [anchor=east, xshift=-4ex]{\tt b.r - a.r} (-1,4);
+  \draw[thick, green,brace = 1ex /mirror] (-1,4) -- node [anchor=east, xshift=-4ex]{\tt b.r - a.r} (-1,1);
+
+  \draw[thick, yellow,brace = 1ex /mirror] (1,-1) -- node [anchor=north, yshift=-4ex]{\tt b.s - a.s} (5,-1);
+  \draw[thick, green,brace = 1ex /mirror] (5,-1) -- node [anchor=north, yshift=-4ex]{\tt b.s - a.s} (9,-1);
+
+  
+  \draw[thick, primary!80!black,shorten >= -1cm, shorten <=-1cm]  (na) -- (nc);
+
+  \foreach \v in {a,b} {
+    \node[ant] at (n\v) {\textcolor{primary!10!black}{\tt \v}};
+  }
+
+  \node[draw=primary, fill=green, circle] at (nc) {\textcolor{green}{\tt C}};
+  
+
+
+
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+<p style="padding-top:36px;">
+Z obrázka vidno, že hľadaná pozícia je (s použitím operátorov, ktoré už mám) ~a + 2*(b - a)~, inými slovami ~2*b - a~.
+Takže celé riešenie je
+</p>
+
+@08a@
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+Podobne ako v prvej časti, ale tentokrát ak mám dve antény ~a~ a ~b~ (pozri obrázok z riešenia časti a ) 
+ktoré si predstavím ako body v rovine so súradnicami $a=(a_x,a_y)$, $b=(b_x,b_y)$, musím nájsť všetky body na polpriamke $a\mapsto b$ s celočíselnými súradnicamu.
+To znamená, že keď si zoberiem vektor (v matematickom zmysle, viď intermezzo v kapitole 31 na str. 164) $\vec{u}=b-a$, hľadám také hodnoty $\alpha$, že
+$a + \alpha\vec{u}$ má celočíselné súradnice. Pretože $a$ aj $b$ majú celočíselné súradnice, musí platiť $\alpha\cdot u_x$ je celé číslo, aj $\alpha\cdot u_y$ je celé číslo.
+Ak si poviem, že $\alpha=\frac{p}{q}$ pre nejaký zlomok $\frac{p}{q}$ v základnom tvare, dostávam $q \mid p \cdot u_x$ a $q \mid p \cdot u_y$. Keďže $q\not\mid p$, $q$ musí byť
+spoločný deliteľ $u_x$ a $u_y$. Takže vidím, že keď si zoberiem $\alpha=\frac{1}{z}$, kde $z$ je najväčší spoločný deliteľ $u_x$ a $u_y$, tak body, ktoré ma zaujímajú, budú
+tvaru $a+k\alpha\vec{u}$.
+</p>
+
+
+<button class="btn btn-primary btn-small" id="button-08b" onclick="ukaz('08b')"> riešenie </button>
+<div class="hidden" id="riesenie-08b">
+
+@08b@
+
+</div>
+

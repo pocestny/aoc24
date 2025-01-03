@@ -4,7 +4,12 @@ import sys
 import socketserver
 from http.server import SimpleHTTPRequestHandler
 
+DIRECTORY="./build"
+
 class WasmHandler(SimpleHTTPRequestHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, directory=DIRECTORY, **kwargs)
+
     def end_headers(self):        
         # Include additional response headers here. CORS for example:
         self.send_header('Access-Control-Allow-Origin', '*')

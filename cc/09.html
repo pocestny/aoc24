@@ -1,0 +1,323 @@
+<h3>Prvá časť</h3>
+<p>
+Prvá časť sa dá urobiť priamočiaro v dvoch krokoch. Najprv si rozbalím skomprimovaný vstup. Keďže sú tam iba cifry od $0$ do $9$, rozbalenie ho natiahne najviac
+deväťkrát, čo nevadí. Vyrobím si teda ~vector<int> a~, kde bude $-1$ pre voľné miesto a inak číslo súboru, ktorý zaberá daný blok.
+</p>
+
+<p>
+Treba si dať pozor na to, že v C++ je síce typ ~char~ číslo, ale je to číslo znaku v <a href="https://en.cppreference.com/w/cpp/language/ascii" target=_blank>ASCII tabuľke</a>.
+Takže napr. ~'a'==97~, ~'0'==48~ atď. Na konvertovanie medzi znakom a číslom sa dá využiť, že cifry idú po sebe, takže keď mám cifru (od ~'0'~ po ~'9'~) uloženú v premennej ~char c~, tak
+jej hodnota je ~int v = c - '0'~).
+</p>
+
+
+
+<button class="btn btn-primary btn-small" id="button-09a-vstup" onclick="ukaz('09a-vstup')"> čítanie vstupu </button>
+<div class="hidden" id="riesenie-09a-vstup">
+
+<p>
+Prechádzam vstupom a priebežne ho rozbaľujem na výstup. ~i~ je pozícia vo vstupe, ~pos~ je pozícia v ~a~, kam sa chystám zapisovať.
+</p>
+
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=0.9, % 1.1
+      xscale=0.7,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=white,circle,fill=primary}
+    ]
+
+
+  \begin{scope}[shift={(8,3)}]
+  \draw[primary!80!black] (0,0) grid (19,1);
+  \node[white,anchor=east] at (-0.5,0.5) {\tt line};
+
+  \foreach \v[count=\i from 0] in {2,3,3,3,1,3,3,1} {
+      \draw[draw=none] (\i,0) rectangle node[white] {\tt \v} ++(1,1);  
+  }
+
+  \foreach \v[count=\i from 9] in {1,4,1,4,1,3,1,4,0,2} {
+      \draw[draw=none] (\i,0) rectangle node[primary!40!black] {\tt \v} ++(1,1);  
+  }
+  \draw[green,->] (8.5,2) node[anchor = south]  {\tt i} -- ++ (0,-1.2);
+  \draw[draw=none] (8,0) rectangle node[green] {\tt 2} ++(1,1);
+
+  \draw[draw=none] (22,0) rectangle node[green] {\tt id = 4} ++(1,1);
+  
+  \end{scope}
+
+  \draw[primary!80!black] (0,0) grid (42,1);
+  \node[white,anchor=east] at (-0.5,0.5) {\tt a};
+
+  \foreach \v[count=\i from 0] in {0,0,.,.,.,1,1,1,.,.,.,2,.,.,.,3,3,3,.} {
+      \draw[draw=none] (\i,0) rectangle node[white] {\tt \v} ++(1,1);
+  }
+
+  \foreach \v[count=\i from 19] in {4,4,.,5,5,5,5,.,6,6,6,6,.,7,7,7,.,8,8,8,8,9,9} {
+      \draw[draw=none] (\i,0) rectangle node[primary!40!black] {\tt \v} ++(1,1);
+  }
+
+  \draw[green,->] (19.5,-1) node [anchor=north,green] {\tt pos } -- ++(0,1.2);
+
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+
+@09_1@
+
+</div>
+
+<p style="padding-top:35px;">
+Keď mám takto rozbalený vstup, zvyšok je priamočiary.
+</p>
+
+
+<button class="btn btn-primary btn-small" id="button-09a" onclick="ukaz('09a')"> riešenie </button>
+<div class="hidden" id="riesenie-09a">
+
+<p>
+Budem mať dve premenné: ~l~ postupuje zľava a ukazuje na prvé voľné miesto v ~a~ a ~r~ postupuje sprava a ukazuje na posledný zaplnený blok:
+</p>
+
+@09a@
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+V tejto časti treba ísť od konca a vždy celý súbor (celý úsek blokov s daným ~id~) presunúť do prvého dosť veľkého prázdneho úseku.
+</p>
+
+<p>
+Vraví sa, že keď má človek v ruke kladivo, všetko vyzerá ako klinec. Pri pohľade na túto úlohu a na vstupný riadok dlhý cca $20\,000$ znakov by jedného hneď napadol <q>intervalový strom</q>.
+Spravil by som hierarchickú štruktúru <q>úradníkov</q> (a.k.a. vrcholov), kde najspodnejšie vrcholy sú zodpovedné za dva susedné bloky, a vrchol na vyššej úrovni je zodpovedný za všetky bloky svojich dvoch
+podriadených. Každý vrchol by  si pamätal dĺžku najdlhšieho voľného úseku, ktorý začína na úseku, za ktorý je zodpovedný. Keď hľadám, kam umiestniť úsek dĺžky $\ell$, pozriem sa na najvyšší vrchol.
+Ak je jeho hodnota menšia ako $\ell$, viem, že úsek nikde nepresuniem (lebo najdlhší voľný úsek je kratší ako $\ell$). Ak je jeho hodnota aspoň $\ell$, pozriem sa, či je hodnota jeho ľavého podriadeného 
+aspoň $\ell$. Ak áno, viem, že mi stačí hľadať niekde v prvej polovici, ak nie, presuniem sa do pravej časti. Takto viem zostupovať smerom dolu, až nájdem voľný úsek. 
+</p>
+
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=0.9, % 1.1
+      xscale=0.7,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=primary!80!black,thick,circle,fill=primary!80!white}
+    ]
+
+
+  
+
+  \foreach \i  in {0,...,20} {
+     \pgfmathsetmacro{\x}{1+\i*2}
+     \coordinate (n1-\i) at (\x,2.5);
+  }
+  \foreach\i  in {0,...,9} {
+     \pgfmathsetmacro{\x}{2+\i*4}
+     \coordinate (n2-\i) at (\x,4);
+  }
+  \coordinate (n2-10) at (41,4);
+  \foreach\i in {0,...,4} {
+     \pgfmathsetmacro{\x}{4+\i*8}
+     \coordinate (n3-\i) at (\x,5.5);
+  }
+  \coordinate (n3-5) at (41,5.5);
+  \foreach\i in {0,...,1} {
+     \pgfmathsetmacro{\x}{8+\i*16}
+     \coordinate (n4-\i) at (\x,7);
+  }
+  \coordinate (n4-2) at (38.5,7);
+  \coordinate (n5-0) at (16,9);
+  \coordinate (n5-1) at (38.5,9);
+  \coordinate (n6-0) at (27.25,10.5);
+
+
+  \draw[orange,very thick] (n6-0) -- (n5-0) -- (n4-0) -- (n3-1) -- (n2-2) -- 
+  (n1-4) -- (8.5,1);
+
+  \fill[orange] (8,0) rectangle (9,1);
+
+  \draw[primary!80!black] (0,0) grid (42,1);
+  \foreach \v[count=\i from 0] in {0,0,9,9,.,1,1,1,.,.,.,2,.,.,.,3,3,3,.,4,4,.,5,5,5,5,.,6,6,6,6,.,7,7,7,.,8,8,8,8,.,.} {
+      \draw[draw=none] (\i,0) rectangle node[white] {\tt \v} ++(1,1);
+      \draw[draw=none] (\i,0) rectangle node[primary!80!black] {\normalsize\tt \i} ++(1,-1);
+  }
+
+
+  \foreach \i  in {0,...,20} {
+     \draw[primary!80!black] (2*\i+0.5,1) -- (n1-\i) -- (2*\i+1.5,1);
+  }
+
+  \foreach\i  in {0,...,9} {
+     \pgfmathsetmacro{\l}{2*\i}
+     \pgfmathsetmacro{\r}{2*\i+1}
+     \draw[primary!80!black] (n1-\l) -- (n2-\i) -- (n1-\r);
+  }
+  \draw[primary!80!black] (n1-20) -- (n2-10);
+
+  \foreach\i in {0,...,4} {
+     \pgfmathsetmacro{\l}{2*\i}
+     \pgfmathsetmacro{\r}{2*\i+1}
+     \draw[primary!80!black] (n2-\l) -- (n3-\i) -- (n2-\r);
+  }
+  \draw[primary!80!black] (n2-10) -- (n3-5);
+
+  \foreach\i in {0,...,1} {
+     \pgfmathsetmacro{\l}{2*\i}
+     \pgfmathsetmacro{\r}{2*\i+1}
+     \draw[primary!80!black] (n3-\l) -- (n4-\i) -- (n3-\r);
+  }
+  \draw[primary!80!black] (n3-4) -- (n4-2) -- (n3-5);
+  \draw[primary!80!black] (n4-0) -- (n5-0) -- (n4-1) (n4-2)--(n5-1);
+  \draw[primary!80!black] (n5-0) -- (n6-0) -- (n5-1);
+
+  \foreach \v[count =\i from 0] in {0,0,1,0,3,0,3,0,0,1,1,0,0,1,0,1,0,1,0,0,2} {
+     \node[ant] at (n1-\i) {\tt \v};
+  }
+
+  \foreach\v[count=\i from 0] in {0,1,3,3,1,1,1,1,1,0,2} {
+     \node[ant]  at (n2-\i) {\large\tt \v};
+  }
+  
+  \foreach\v[count=\i from 0] in {1,3,1,1,1,2} {
+     \node[ant]  at (n3-\i) {\large\tt \v};
+  }
+
+  \foreach\v[count=\i from 0] in {3,1,2} {
+     \node[ant]  at (n4-\i) {\large\tt \v};
+  }
+
+  \node[ant]  at (n5-0) {\large\tt 3};
+  \node[ant]  at (n5-1) {\large\tt 2};
+  \node[ant]  at (n6-0) {\large\tt 3};
+
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+
+<p style="padding-top:35px;">
+Ak úsek presuniem a dĺžka voľného bloku sa zmení, stačí mi upraviť hodnoty na ceste od začiatku zmeneného bloku smerom nahor. 
+Vyzerá to zložito, ale v skutočnosti sa to dá naprogramovať celkom ľahko, pozri napr.
+<a href="https://www.ksp.sk/kucharka/intervalovy_strom/" target=_blank>tu</a> alebo
+<a href="https://cp-algorithms.com/data_structures/segment_tree.html" target=_blank>tu</a>.
+</p>
+
+
+<p>
+V tejto úlohe to ale v skutočnosti netreba a celkom dobre zafunguje <q>drevorubačské</q> riešenie. 
+</p>
+
+<button class="btn btn-primary btn-small" id="button-09b" onclick="ukaz('09b')"> riešenie </button>
+<div class="hidden" id="riesenie-09b">
+  
+<p>Pre pohodlie si môžem urobiť ~struct Bl {int id, pos, len};~
+kde si budem pokope pamätať údaje o jednom bloku: jeho ~id~ (číslo súboru alebo ~-1~ ak je prázdny), pozíciu začiatku a dĺžku. Potom stačí ísť odzadu a pre každý neprázdny blok,
+násť spredu prvý prázdny, do ktorého sa zmestí. Potom prázdnemu upravím dĺžku a plnému zmením polohu (nemusím ho presúvať, ostane odložený na konci zoznamu).
+</p>
+
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=1.1,
+      xscale=1.5,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=primary!80!black,thick,circle,fill=primary!80!white}
+    ]
+
+ 
+  \draw[primary] (0,3) rectangle (18,0);
+  \draw[primary] (0,2) -- (18,2) (0,1) -- (18,1);
+  \foreach\i in {1,...,17} {
+    \draw[primary] (\i,3) -- (\i,0);
+  }
+
+  \foreach\v[count=\i from 0] in {id,pos,len} {
+    \node[white,anchor=east] at (-0.5,2.5-\i) {\tt\v};
+  }
+
+  \foreach \id/\pos/\len [count = \i from 0] in {0/0/2,-1/4/1,1/5/3,-1/8/3,2/11/1,-1/12/3,3/15/3,-1/18/1,4/19/2,-1/21/1,5/22/4,-1/26/1,6/27/4,-1/31/1,7/32/3,-1/35/1,8/36/4} {
+     \foreach\v[count=\j from 0] in {\id,\pos,\len} {
+        \draw[draw=none] (\i,3-\j) rectangle node[white] {\tt\v} ++(1,-1);
+      }      
+  }
+
+  \foreach \id/\pos/\len [count = \i from 17] in {9/2/2} {
+     \foreach\v[count=\j from 0] in {\id,\pos,\len} {
+        \draw[draw=none] (\i,3-\j) rectangle node[green] {\tt\v} ++(1,-1);
+      }      
+  }
+
+   \foreach\v[count=\j from 0] in {-1,4,1}{
+        \draw[draw=none] (1,3-\j) rectangle node[yellow] {\tt\v} ++(1,-1);
+   }
+
+  \draw[->,green] (16.5,3.8) node[anchor=south]{\tt i} -- (16.5,3.1);
+
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+<p style="padding-top:35px;">
+Celé riešenie by mohlo vyzerať takto:
+</p>
+
+@09b@
+
+</div>
+
