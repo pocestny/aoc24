@@ -1,0 +1,238 @@
+<p>
+Táto úloha je tiež priamočiara. 
+Po načítaní vstupu, stačí odsimulovať pohyb strážnika. T.j. isť jedným smerom, keď narazíme na prekážku (znak ~'#'~), 
+otočíme sa pred ňou doprava o 90 stupňov (Doležité je nezabudnúť, že otáčenie je relatívne vzhľadom na doterajší smer pohybu strážnika).
+Keď vyjdeme z 'mapy', končíme.
+Počas 'obchôdzky' si musíme zapamätať na koľkých rôznych políčkach sa strážnik nachádzal.
+</p>
+
+<h3>Čítanie vstupu</h3>
+
+<p>
+Celý vstup načítame a rozdelíme si ho na riadky.
+</p>
+
+@d6-1-vstup1@
+
+<p>
+Zistíme, kde strážnik začína - musíme nájsť v práve prečítanom vstupe znak ~'^'~. Dá sa to napríklad takto:
+</p>
+
+@d6-1-vstup2a@
+
+<p>
+Alternatívne dosiahneme to isté, keď využijeme, 
+že riadky sú reťazce, a teda vnútorný cyklus môžeme nahradiť
+použitím  ~find~.
+</p>
+
+@d6-1-vstup2b@
+
+<p>
+V oboch prípadoch využívame, že zadanie zaručuje, 
+že vo vstupe sa znak ~'^'~ nachádza práve raz.
+Zistili sme, že strážnik začína v riadku ~rz~ a stĺpci ~sz~.
+</p>
+
+<p>
+Nezabudnite si program spustiť v python shell a pozrite si obsah premenných ~m~,~zr~,~zs~ a skontrolujte si na príklade zo zadania, či sú programom vypočítané hodnoty správne.
+</p>
+
+<h3>Prvá časť</h3>
+
+<p>
+Podobne ako v úlohe 4 sa máme 'pohybovať' po políčkach v štvorčekovej sieti. 
+Políčko v riadku $r$ a stĺpci $s$ má štyri susedné políčka v smeroch:
+hore, vpravo, dole a vľavo.
+Použijeme rovnako ako vtedy pole vektorov 
+~drs=[(-1,0),(0,1),(1,0),(0,-1)]~ (dvojice sú o koľko je vzdialený sused v riadku a stĺpci, v smeroch ako sme uviedli, to je dôležité).
+Napríklad, keď sa chceme posunúť o krok hore, zaujíma nás ~drs[0]~, ~drs[0][0]~ je o koľko sa má zmeniť riadok a ~drs[0][1]~ o koľko stĺpec.
+</p>
+
+<p>
+Na to, aby sme vedeli simulovať pohyb strážnika, teda stačí vedieť na ktorom políčku sa práve nachádza.
+budeme si to pamätať v premenných ~r~ a ~s~ (riadok a stĺpec).
+Zatiaľ máme políčko, kde je strážnik uložené v premenných ~zr~ a ~zs~ a vieme že strážnik je otočený smerom hore.
+Musíme si pamätať aj smer, ktorým sa hýbe, premennú nazveme ~hd~ (heading).
+Nastaviť počiatočné hodnoty premenným ~drs~, ~r~, ~s~ a ~hd~.
+</p>
+
+@d6-prvacast1a@
+
+<p>
+Keď je strážnik na políčku ~r~,~s~, a má urobiť krok smerom ~hd~, znamená to, že sa má posunúť na políčko ~r+drs[hd][0]~, ~s+drs[hd][1]~.
+</p>
+
+<p>
+Musíme si dať pozor, či krok daným smerom môžeme urobiť. Teda či tam kam chceme isť nie je prekážka (znak ~'#'~).
+Ak je musíme zmeniť smer o 90 stupňov doprava.
+Naše smery sú usporiadane v smere hodinových ručičiek, takže keď sme mali smer ~hd~, nový smer bude ~hd+1~.
+Všimnite si, že vďaka podmienke ~!='#'~, sa nemusíme špeciálne starať o políčko obsahujce znak ~'^'~, tvári sa ako políčko bez steny, kam strážnik môže vstúpiť.
+</p>
+<p>
+Dostaneme niečo takéto:
+</p>
+
+@d6-prvacast1b@
+
+<p>
+Kroky musíme opakovať až pokým strážnik nevyjde z plochy.
+Zadanie hovorí, že vstup, ktorý dostaneme zaručuje, že strážnik z plochy vyjde.
+(Predbehneme, ak vám to nie je zrejmé už teraz, v druhej časti nás presvedčia, že to tak nemusí byť pre každý vstup...) 
+Na ploche ostaneme, keď prechádzame do riadku $\ge 0$ a súčasne $<maxr$ a do stĺpca $\ge 0$ a účasne $<maxs$. 
+Využijeme, že v pythone sa dá zapísať ~v1<v2 and v2<v3~ ako ~v1<h<v2.
+</>
+
+@d6-prvacast2@
+
+<p>
+Všimnite si, že pred tým než sa ide vyhodnotiť podmienka v cykle ~while~ platí, že premenné ~r~, ~s~ a ~hd~, obsahujú pozíciu kde je strážnik a jeho smer, označme si toto tvrdenie $P$.
+Ak platí podmienka v príkaze ~while~, keby strážnik urobil krok v smere ~hd~ ostal by na ploche.
+Test v cykle kontroluje, či sa krok daným smerom dá vykonať.
+Ak áno, zmenia sa príslušne premenné ~r~, ~s~.
+Ak nie, len sa zmení smer ~hd~, ale nie ~r~ a ~s~.
+v oboch prípadoch pokračuje cyklus ~while~, a stále platí $P$.
+Je zrejmé, že keď cyklus ~while~ skončí, strážnik vyšiel z plochy.
+</p>
+ 
+<p>
+Ostalo nám už len spočítať koľko rôznych políčok navštívil pred tým, než opustil plochu.
+Nestačí si len pripočítať 1 za každé políčko kam prišiel, lebo jeho cesta, ako vidieť aj na príklade v zadaní sa môže pretnúť sama so sebou - na políčko by vstúpil aspoň dva krát. 
+(Môžete si rozmyslieť, koľko najviackrát môže na to isté políčko stúpiť, keď vždy vyjde z plochy.)
+</p>
+
+<p>
+Takže si musíme poznačiť kade šiel. A potom vyradiť prípadné viacnásobné výskyty hodnôt, zpočítať ich len raz. 
+To sa dá zrealizovať rôznymi spôsobmi.
+Z matematiky poznáme štruktúru, v ktorej nie sú duplikáty - množinu.
+Množina je samozrejme aj v pythone.
+Premenú ~m~typu množina vytvoríme ~m=set()~. 
+Takže riadok a stĺpec navštívených políčok by stačilo pridávať do množiny ako dvojice ~(r,s)~ pomocou ~m.add((r,s))~.
+A na záver len zistiť jej veľkosť pomocou ~len(m)~.
+My použijeme slovník, 
+https://docs.python.org/3/library/stdtypes.html#dict
+nazveme ho v.
+Zapíšeme si doň všetky 'políčka', na ktorých sa strážnik nachádzal.
+Výhoda slovníka je, že ho môžeme indexovať aj dvojicou a pracuje sa s ním podobne ako s polom.
+</p>
+
+@d6-prvacast3@
+
+<p>
+Keď všetky časti programu dáme dokopy dostaneme:
+</p>
+
+<button class="btn btn-primary btn-small" id="button-d6a" onclick="ukaz('d6a')"> riešenie </button>
+<div class="hidden" id="riesenie-d6a">
+
+@d6a@
+
+</div>
+ 
+<h3>Druhá časť</h3>
+
+<p>
+Do miestnosti máme pridať jedinú prekážku (znak ~'#'~) tak,
+aby strážnik začal chodiť v cykle (teda nevyjde z miestnosti).
+Vyskúšame postupne na každé políčko mapy, kde nie je stena, 
+dať stenu a skúsiť simulovať prechádzku strážnika.
+Ak sa počas prechádzky 'zacyklí', 
+pripočítame 1 k výsledku druhej časti.
+</p>
+
+<p>
+Zdá sa, že druhá časť má veľa spoločné s prvou, skúsime dať všetko do jedného programu. 
+Prechádzku strážnika používame v oboch častiach, preto  
+si ako prípravné práce urobme príkaz ~obid(r,s)~,
+ktorý bude realizovať prechádzku strážnika začínajúcu v riadku $r$ a stĺpci $s$.
+Upravené riešenie prvej časti:
+</p>
+
+@d6a-obid@
+<p>
+Simuláciu jeho pohybu už máme z prvej časti, 
+len do nej musíme dorobiť kontrolu, 
+či neprišiel dva krát na to isté políčko.
+Na prvý pohľad by sa mohlo zdať, 
+že pred tým než si zapíšme, 
+že sme do políčka v riadku ~r~ a stĺpci ~s~ vošli, 
+otestujeme, či sme tam už neboli.
+Či sme ~(r,s)~ do slovníka ~v~ už predtým vložili, 
+zistíme napr. podmienkou ~(r,s) in v~.
+Ak sme tam ešte neboli, zapíšeme, ale ak sme tam boli, vyhlásime,
+že strážnik sa 'zacyklil'
+Takéto riešenie ale nevypočíta dobrý výsledok...
+</p>  
+
+<p>
+Po chvíli rozmýšľania a kreslenia si, 
+čo sa vlastne deje v príklade zo zadania, prídeme na to, 
+že dôležité je aj z akého smeru na to isté políčko strážnik vojde.
+Teda na rozdiel od prvej časti si budeme pamätať trojice ~(r,s,hd)~.
+Pamätať si ich budeme v premennej ~rpt~, tiež typu slovník.
+
+Ďaľšia vec, na ktorú narazíme, že musíme meniť plán miestnosti ~m~.
+Reťazec je v pythone nemenný, zmeniť sa dá len tak, že vytvoríme nový, zmenený tak, ako potrebujeme.
+Aby, sme si uľahčili prácu, zmeníme len riadky.
+Namiesto reťazca si riadok budeme pamätať ako zoznam znakov.
+Napríklad reťazec ~'ahoj'~, si budeme pamatať ako výsledok ~list('ahoj')~, t.j. ~['a', 'h', 'o', 'j']~. 
+Plán miestnosti ~m~ prerobíme takto:
+~m=[list(r) for r in m]~ 
+Všimnite si, že ku znakom v ~m~ pristupujeme rovnako, ako doteraz ~m[r][s]~,
+takže vo zvyšku programu netreba nič meniť.
+Navyše teraz ľahko vieme zmeniť hociktorý znak, lebo to znamená nahradiť reťazec dĺžky 1, iným reťazcom dĺžky 1, teda obyčajným priradením.
+Riešenie druhej časti by mohlo vyzerať nejako takto:
+</p>
+
+@d6b-1@
+
+<p>
+Musíme ale upraviť funkciu ~obid~, lebo doteraz vracala vždy slovník ~v~.
+Teraz by sme chceli, aby nám vrátila slovník, ako doteraz, keď strážnik vyjde von z miestnosti.
+Keď sa zacyklí by mala vrátiť nejakú špeciálnu hodnotu, aby sme to vedeli odlíšiť. Napríklad ~0~. 
+Upravená funkcia ~obid~:
+</p>
+
+@d6b-obid2@
+
+<button class="btn btn-primary btn-small" id="button-d6b" onclick="ukaz('d6b')"> riešenie </button>
+<div class="hidden" id="riesenie-d6b">
+
+@d6b@
+
+<p>
+Program vypočíta výsledky, ale v druhej časti trvá výpočet takmer 30s, čo je už dosť dlho. 
+Skúsime sa pozrieť na to, či by sme nevedeli program zrýchliť.
+Keď si zrátame koľko krát sme zapisovali do slovníka ~rpt~, 
+zistíme, že v druhej časti to bolo vyše 72 miliónov krát.
+Nevedeli by sme tento počet zmenšiť?
+</p>
+
+<p>
+Ozaj si potrebujeme pamätať celú cestu na to, aby sme zistili či sa zacyklí? 
+Keď sme na rovnom úseku (jedno akým smerom) asi si nemusíme pamätať všetky jeho políčka, ale len začiatočné (alebo koncové).
+Ak by sme sa nejakým činom druhý krát dostali na tento rovný úsek, tak sa ďalej budeme pohybovať rovnako, ako keď sme na ňom boli prvý krát, teda buď na jeho koci to zistíme (alebo na začiatku ďalšieho rovného úseku). 
+Funkcia ~obid~ po tejto zmene:
+</p>
+
+@d6b-obid@
+
+<p>
+Počet zápisov do ~rpt~ klesol na čosi vyše 1.9 milióna a čas výpočtu sa skrátil na 18s.
+</p>
+
+<p>
+Keď si uvedomíme, že prekážky nemusíme skúšať dávať všade kam sa dá.
+Keď strážnik cez niektoré políčko v prvej časti nešiel, tak tam nemá zmysel dávať prekážku, lebo sa na ňu nemá ako dostať.
+Aká náhoda. 
+Políčka kade šiel v riešení prvej časti máme v slovníku ~v~.
+Prekážky stačí skúsiť dávať len na ne.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-d6c" onclick="ukaz('d6c')"> finálne riešenie </button>
+<div class="hidden" id="riesenie-d6c">
+
+<p>
+Teraz program urobil len skoro 615000 zápisov do ~rpt~ s čast výpočty bol mnej ako 4s.   
+</p>
+</div>
