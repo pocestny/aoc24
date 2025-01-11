@@ -1,25 +1,170 @@
 <h3>Prvá časť</h3>
 <p>
+Opäť úloha, kde využijeme naáš predpripravený typ ~Pos~ a veci okolo, ktoré môžeme <q>copy-paste</q> vložiť na začiatok programu.
+Ďalej môžeme spraviť niekoľko rozhodnutí, ktoré sú do veľkej miery vecou vkusu. Určite si niekde treba pamätať vstup. Jedna možnosť je pamätať si ho ako
+~vector<vector<int>>~ a prečítať napr. takto:
 </p>
 
-
-
-<button class="btn btn-primary btn-small" id="button-02a" onclick="ukaz('01a')"> riešenie </button>
-<div class="hidden" id="riesenie-02a">
+@10_1@
 
 <p>
+Iná možnosť je pracovať priamo so vstupným reťazcom znakov (a myslieť na to, že ak chceme hodnotu čísla, treba vždy odrátať ~'0'~).
 </p>
+
+@10_2@
+
+<p>
+Ďalšie rozhodnutie sa týka prístupu k vstupnej mape. Bude totiž častokrát treba kontrolovať, či sme pri rátaní pozície nevyšli za okraj.
+Buď to urobíme tak, že na zisťovanie hodnôt urobíme pomocnú funkci, napr.
+</p>
+
+@10_3@
+
+<p>
+alebo použijeme techniku <q>zarážky</q> (sentinel) a už pri čítaní vstupu si vyrobíme väčšie pole, ktoré bude na okrajoch mať hodnoty menšie ako ~0~,
+(ak používame priamo znaky, tak napr. ~'#'<'0'~)
+napr.
+</p>
+
+@10_4@
+
+<p>
+Ďalšia vec, ktorá sa pri riešení môže hodiť, je ~set~. Ak si chceme pamätať množinu kľúčov, ale nepotrebujeme k nim mať hodnoty, môžeme spraviť napr.
+~map<string,int> m~ s tým, že hodnota nás nikdy nebude zaujímať, pôjde iba o to, či daný string ~s~ je v m, t.j. či ~m.find(s)!=m.end()~. Aby sme nemuseli
+udržiavať zbytočné hodnoty, existuje typ <q>množina</q>, t.j. môžeme mať napr. ~set<string> m~. Pridať a ubrať vieme pomocou ~m.insert(s)~ a ~m.erase(s)~.
+Zisťovať, či ~s~ je v ~m~ vieme rovnako ako v mape, a rovnako vieme mať počet prvkov ~m.size()~. Iterovanie cez množinu teraz poskytuje priamo hodnoty 
+(a nie ~pair<key,val>~ ako pri ~map~), čiže
+napr. cyklus ~for(const string &s: m) { ... }~ pôjde cez všetky stringy v ~m~ (v lexikografixky usporiadanom poradí). To ~const~ hovorí, že
+nakoľko ideme priamo cez stringy, ktoré sú v množine a nerobíme ich kópie, nesmieme ich meniť. Cyklus ~for(string s: m) { ... }~ pôjde rovnako 
+cez prvky množiny, ale vždy urobí lokálnu kópiu. Skrátene môžeme písať ~for(auto &s: m) { ... }~ resp. ~for(auto s: m) { ... }~.
+No a pre úplnosť: rovnako, ako je ~unordered_map~ je aj ~unordered_set~.
+</p>
+
+<p>
+No a napokon, jedna z možností riešenia je použiť rekurziu (t.j. funkciu, ktorá volá sama seba, viď. kapitola 11).
+</p>
+
+<button class="btn btn-primary btn-small" id="button-10a.i" onclick="ukaz('10a.i')"> iteratívne riešenie </button>
+<div class="hidden" id="riesenie-10a.i">
+
+<p>
+Jedna možnosť je takáto: budem prechádzať cez vstup a vždy, keď nájdem nulu, zrátam, na koľko deviatok vedú cesty.
+Najprv sa pozriem na všetky susedné políčka a zapaätám si (v množine ~pos[1]~), ktoré z nich sú jednotky. Potom prejdem cez všetky 
+pozície z ~pos[1]~ a pre každú spravím to isté: pozriem sa na všetky susedné políčka a zistím, ktoré z nich sú dvojky a tie pridám do ~pos[2]~.
+Keď toto spravím pre všetky prvky z ~pos[1]~, v ~pos[2]~ budú všetky políčka, do ktorých vedie (správna) cesta dĺžky 2. Potom budem prechádzať 
+prvky z ~pos[2]~ a ich susedné políčka, na ktorých je trojka, budem ukladať do ~pos[3]~ atď. Celé by to mohlo vyzerať takto (dajme tomu, že
+vstup budem mať v stringoch so zarážkou)
+</p>
+
+@10a@
+
+<p>
+Za povšimnutie stojí, že keď v cykle pre ~l~ prečítam prvky z ~pos[l-1]~, tak ~pos[l-1]~ už nikdy nebudem potrebovať. Namiesto 10 množín by mi teda stačili dve:
+jedna z ktorej čítam a druhá, do ktorej píšem. 
+</p>
+
+</div>
+
+<div style="padding-top:35px;"> </div>
+
+<button class="btn btn-primary btn-small" id="button-10a.r" onclick="ukaz('10a.r')"> rekurzívne riešenie </button>
+<div class="hidden" id="riesenie-10a.r">
+
+<p>
+Pri rekurzívnom riešené budem opäť prechádzať vstupom a vždy, keď nájdem nulu, zistím, do koľkých deviatok sa z nej dá dostať. Teraz budem ale skúšať všetky možnosti takto.
+Chcem urobiť funkciu, ktorá mi povie, do ktorých deviatok sa viem dostať (korektnou cestou, t.j. cestou, ktorá vždy zvýši hodnotu o 1) z pozície, kde stojím.
+Keď stojím na deviatke, je to jednoduché - jediná pozícia je tá, na ktorej som. Keď stojím na niečom inom, napr. na políčku ~v~, tak sa pozriem na všetky susedné
+políčka a pre každé z nich, na ktorom je ~v+1~ urobím to isté: zistím, do ktorých deviatok sa z neho viem dostať. V nasledujúcom programe je funkcia ~test~, ktorá robí presne toto:
+do globálnej premennej ~set<Pos> tr~ uloží tie pozície deviatok, do ktorých sa dá dostať z aktuálnej pozície ~p~.
+</p>
+
+@10a.rec@
 
 </div>
 
 <hr/>
 <h3>Druhá časť</h3>
 
+<p>
+V tejto časti treba zrátať nielen počet deviatok, kam sa vieme dostať, ale celkový počet ciest, ktorými sa vieme dostať do nejakej deviatky. 
+Tu si treba dať pozor, že pre dlhšie vzdialenosti by ten počet ciest mohol rásť dosť rýchlo. Keby čísla boli usporiadané po uhlopriečkach takto
+</p>
 
-<button class="btn btn-primary btn-small" id="button-02b" onclick="ukaz('02b')"> riešenie </button>
-<div class="hidden" id="riesenie-02b">
 
-3^11 = 177147
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=0.6, % 1.1
+      xscale=0.6,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=white,circle,fill=primary}
+    ]
+
+  \foreach\y in {0,...,9} {
+  \foreach\v[count=\x from 0] in {\y,...,9} {
+    \pgfmathtruncatemacro{\tmp}{(9-\v)*10}
+    \node[primary!\tmp!white]  at (\x,-\y) {\v};
+  }
+  }
+
+
+  \end{tikzpicture}
+\end{document}
+</script></div>
+
+<p style="padding-top:35px;">
+tak každá cesta dĺžky 9, ktorá ide v každom kroku doprava alebo dole, by prišla do deviatky. Takých ciest je $2^9=512$, čo nie je veľa. Keby nás ale zaujímali napr. cesty dĺžky 40,
+bolo by isch $2^{40}=1\,099\,511\,627\,776$. Rekurzia, ktorá skúša všetky cesty, by preto bola príliš pomalá, kým iteratívne riešenie, ktoré by si pre každé políčko pamätalo, koľkátimi cestami 
+sa doňho vieme dostať, by stále išlo rýchlo.
+</p>
+
+<p>
+Keďže máme iba krátke cesty, tieto úvahy nie sú potrebné a obe riešenia prejdú rovnako dobre.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-10b.i" onclick="ukaz('10b.i')"> iteratívne riešenie </button>
+<div class="hidden" id="riesenie-10b.i">
+
+<p>
+Idea riešenia je rovnaká ako v prvej časti: pre každé políčko s nulou sa pozriem na štyri susedné políčka a zapamätám si všetky pozície, na ktoré sa viem dostať (to sú tie, na ktorých je jednotka).
+Na rozdiel od prvej časti, tu si ale budem pamätať nielen množinu pozícií na ktoré sa viem dostať, ale pre každý pozíciu aj počet rôznych ciest, ktorými sa tam viem dostať.
+Potom bude platiť, že ak je nejaké políčko, napr. 5, a má suseda 6, tak všetky cesty, ktoré vedú do 5ky viem predĺžuť do 6ky. Zároveň cesty, ktoré do 6ky prídu z rôznych susedov, musia byť určite rôzne.
+Preto stačí v programe malá úprava: namiesto ~vector<set<Pos>> pos(10)~ budeme mať ~vector<map<Pos,int>> pos(10)~, kde si pre každú pozíciu pamätáme počet ciest, ktorými sa tam vieme dostať.
+Výsledný program môže vyzerať napr. takto:
+</p>
+
+@10b@
 
 </div>
+
+<div style="padding-top:35px;"> </div>
+
+<button class="btn btn-primary btn-small" id="button-10b.r" onclick="ukaz('10b.r')"> rekurzívne riešenie </button>
+<div class="hidden" id="riesenie-10b.r">
+
+<p>
+Rekurzívnemu riešeniu tiež stačí len malá úprava - namiesto globálnej množiny ~set<Pos> tr~, kde sme si pamätali dosiahnuté pozície (každú iba raz), tak vždy, keď prídeme do deviatky (t.j. nájdeme ďalšiu cestu),
+tak zvýšime počet nájdených ciest:
+</p>
+
+@10b.rec@
+
+</div>
+
 
