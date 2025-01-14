@@ -1,0 +1,22 @@
+import time
+t,d=time.time(),0
+vys=0
+for r in open('d7.in'):
+  n,ns=r.split(':')
+  n,ns=int(n),list(map(int,ns.split()))
+  bol=[ns[0]]
+  for x in ns[1:]:
+    nbol=[]
+    for c in bol:
+      q=c*x
+      if q<=n: nbol.append(q)      
+      q=c+x
+      if q<=n: nbol.append(q) 
+      q=int(str(c)+str(x))               # len pre cast 2
+      if q<=n: nbol.append(q)            # len pre cast 2
+    bol=nbol  
+    d+=len(bol)
+  if n in bol:
+    vys+=n
+print(vys,'cas:',time.time()-t,'zápisov do pamäti:',d)
+
