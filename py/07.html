@@ -1,0 +1,161 @@
+<p>
+Ako vždy najprv plán riešenia úlohy.
+Vstup stačí čítať postupne po jednotlivých riadkoch.
+Každý riadok je jedno konkrétne zadanie úlohy (problému).
+Máme zistiť či sa doplnením operácií $+$ alebo $*$ medzi čísla dá vytvoriť výraz, ktorý keď vypočítame dostaneme zadané číslo.
+Príklad výrazu $11+6+16*20$ (čísla sú zo zadania úlohy a operácie sme pre názornosť doplnili).
+Hodnota výrazu sa v tejto úlohe nepočíta tak, ako sme zvyknutý, ale tak akoby bol uzátvorkovaný zľava:
+Pre náš príklad $((11+6)+16)*20$.
+To sa neskôr ukáže ako zjednodušenie oproti počítaniu hodnoty bez zátvoriek, lebo nemusíme brať do úvahy poradie vykonávania operácií.
+Ako pre zdané čísla vyrobiť všetky možné výrazy?
+Dôležité je, že poradie čísiel je pevne dané.
+Medzi každé dve susedné čísla máme dať jednu z dvoch operácií.
+To nabáda na použitie dvojkovej sústavy.
+Máme napr. $k+1$ čísiel, medzi nimi je $k$ medzier.
+Keď zoberieme $k$-bitové čísla v dvojkovej sústave.
+$j$-ty bit zľava kóduje operáciu medzi $j.$ a $j+1.$ číslom z ľava, 
+napr. 0 je $+$ a 1 je $*$,
+Každé číslo kóduje jednu možnosť. 
+Čísla sú rôzne, teda aj možnosti sú rôzne, je ich $2^k$.
+Keďže vidíme vstupné údaje, ľahko zistíme, že úlohu budeme riešiť pre najviac 12 čísiel.
+$2^11$ je $2048$, počet možností je relatívne malý.
+Pre každú treba len vypočítať hodnotu výrazu, čo je najviac 11 operácií.
+Ešte treba zobrať do úvahy, že vstup obsahuje takmer tisíc prípadov úlohy.
+Celkovo bude treba v najhoršom prípade skontrolovať $2048*1000=2048000$
+možností.
+Každá možnosť vyžaduje vykonať najviac 11 operácíí.
+Spolu to je najviac 22528000 operácií.
+To by sa ešte mohlo dať zvládnuť v nejakom rozumnom čase.
+</p>
+
+<h3>Čítanie vstupu</h3>
+
+<p>
+Celý vstup načítame a rozdelíme si ho na riadky.
+</p>
+
+@d7-vstup1@
+
+
+<h3>Prvá časť</h3>
+
+<p>
+Príkaz ~format(x, '011b')~, vypíše číslo ~x~ v dvojkovej sústave na $11$ bitov, aj s vedúcimi $0$. 
+</p>
+
+<p>
+Celý program presne podľa nášho vyššie uvedeného plánu, aj s meraním času výpočtu:
+</p>
+
+<button class="btn btn-primary btn-small" id="button-d7-binar" onclick="ukaz('d7-binar')"> riešenie </button>
+<div class="hidden" id="riesenie-d7-binar">
+
+@d7-binar@
+
+</div>
+
+<p>
+Majme na vstupe napríklad 8 čísiel.
+Binárne reprezentácie kódujúce operácie napríklad 1010111 a 1010011 majú prvé štyri bity zľava rovnaké.
+To znamená, že sa počítajú s prvými číslami rovnaké operácie, teda aj ich výsledok bude rovnaký, ale počítame ho opakovane.
+(Koľko je 7 bitových čísiel začínajúcich 1010?)
+Skúsme, či nevieme odstrániť opakované počítanie toho istého. 
+</p>
+
+<p>
+Opakovanie tých istých výpočtov odstránime tak, že si budeme udržiavať všetky hodnoty, ktoré môžeme vypočítať použitím $k-1$ operácií s prvými $k$ číslami.
+Na začiatku máme len prvé číslo.
+To vieme druhým číslom vynásobiť alebo ho k nemu pripočítať.
+Dostaneme dve hodnoty (možno rovnaké), ktoré mohli vzniknúť jednou operáciou z prvých dvoch čísiel. 
+Teraz každú z týchto dvoch hodnôt vieme tretím číslom vynásobiť, 
+alebo ho pripočítať. 
+Dostaneme najviac štyri rôzne hodnoty.
+Keď takto budeme postupovať až po poslednú operáciu, dostaneme všetky možné výsledky.
+Na záver stačí skontrolovať, či je medzi nimi $n$.
+</p>
+
+príklad s obrázkom
+
+<p>
+Možnosti popočítame 'po jednotlivých poschodiach'.
+'Poschodie' z ktorého počítame nasledujúce poschodie, nazveme ~bol~ a nasledujúce ~nbol~.
+Obe premenné budú typu zoznam.
+Do ~bol~ na začiatku vložíme ~ns[0]~.
+A potom postupne pre každé zo zvyšných čísiel zo vstupu, t.j. ~ns[1:]~ 
+vyrábame 'poschodia':
+</p>
+
+@d7-upravaList@
+
+<h3>Druhá časť</h3>
+
+<p>
+Keď máme operácie tri, môžeme využiť riešenie založené na kódovaní postupnosti operácií číslom zapísaným v dvojkovej sústave, len použijeme čísla zapísane v trojkovej sústave.
+Cifra 2 bude operácia ~||~.
+operáciu $v || c$ zrealizujeme takto: ~int(str(v)+str(c))~.
+Všimnite si, že to nemôžeme vypočítať ako ~v*10+c~, lebo ~c~ môže byť viacciferné!
+Kompletný program: 
+</p>
+
+<button class="btn btn-primary btn-small" id="button-d7-ternar" onclick="ukaz('d7-ternar')"> riešenie </button>
+<div class="hidden" id="riesenie-d7-ternar">
+
+<p>
+Tento program relatívne dlho počíta.
+Nedal by sa urýchliť.
+Vrátime sa k počítaniu po 'poschodiach'.
+Do nasledujúceho poschodia pridáme aj tretiu možnosť:
+</p>
+
+@d7-upravaList2@
+
+<p>
+Tento program je asi 10 krát rýchlejší ako predchádzajúce riešenie využívajúce zápis čísiel v trojkovej sústave.
+Vykoná vyše 23 miliónov zápisov do pamati (súčet veľkostí všetkých 'poschodí').
+Všimnite si, že ak $q>n$, nemá zmysel $q$ pridať do ďalšieho poschodia.
+Pridáme do programu podmienky, ktoré to zabezpečia.
+</p>
+
+@d7-upravaList3@
+
+<p>
+Oproti predchádzajúcemu programu je o 25% rýchlejší a zápisy klesli na menej ako polovicu.
+Môžeme ešte skúsiť program zapísať stručnejšie.
+Tri možnosti akú operáciu použiť môžeme do zoanamu pridať naraz využitím ~expand~.  
+Namiesto priebežného testovania či $q\le n$, pridáme všetky tri možnosti a z novo vytvoreného poschodia vyfiltrujeme len tie hodnoty, ktoré sú $\le n$:
+~list(filter(lambda x: x<=n,nbol))~
+</p>
+
+@d7-upravaList4@
+
+<p>
+Program je kratší, do pamati zapíše rovnako veľa krát a je aj rovnako rýchly. 
+Môžete skúsiť zmeniť typ ~bol~ zo zoznamu na množinu 
+(~bol=set([ns[0]])~, ~update~ treba zmeniť na ~extend~).
+Všetky prvky v množine sú rovnaké takže by sme mohli ušetriť počítanie opakujúcich sa prvkov.
+Zistíte, že program počíta dlhšie a zápisov do pamäti bolo menej len o zanedbateľný počet.
+</p>
+
+<p>
+Posledná verzia programu využije pozorovanie, že výraz sa počíta takto
+$(\dots((c_0 op_1 c_1) op_2 c_2)\dots) op_k c_k$.
+Operácie budeme 'dopĺňať' od konca. 
+$op_k$ môže byť vždy $-$, ale násobenie môže byť len ak je $n$ deliteľné  $c_k$. 
+Podobne s operáciou $||$, tá sa mohla vykonať len ak $n$ končí $c_k$.
+Podrobnosti sú v nasledujúcom programe 
+</p>
+
+<button class="btn btn-primary btn-small" id="d7-uprava2" onclick="ukaz('d7-uprava2')"> finálne riešenie </button>
+<div class="hidden" id="riesenie-d7-uprava2">
+
+<p>
+Program počíta asi 100 krát rýchlejšie ako predchádzajúca verzia a zapíše do pamäti len trocha viac ako 40000 krát. 
+To je úctyhodné vylepšenie. 
+Takže sa oplatilo s programom sa trocha pohrať a neuspokojiť sa s prvou verziou, ktorá vypočítala správny výsledok. 
+Pre zujímavosť riešenie zapísané trocha v 'zhustenejšej' forme.
+</p>
+
+<button class="btn btn-primary btn-small" id="d7ver5" onclick="ukaz('d7ver5')"> riešenie na 10 riadkov </button>
+<div class="hidden" id="riesenie-d7ver5">
+
+</div>
