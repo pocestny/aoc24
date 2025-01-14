@@ -1,26 +1,126 @@
-<h3>Prvá časť</h3>
 <p>
-
+Prvá otázka, ktorá nás môže trápiť, je aké veľké čísla nám môžu vznikať. Na bežných systémoch vie typ ~int~ vie uložiť najväčšie číslo ~2147483647~ (viď kapitola 7),
+ak použijeme typ ~uint64_t~ (z knižnice ~<cstdint>~), tak 
+najväčšie číslo je ~18446744073709551615~. Keby sme 6-krát za sebou vynásobili nejaké číslo $c$ ~2024~,
+dostaneme $c\cdot2048^6=c\cdot68748471842302590976$.
+Čo ak budeme potrebovať väčšie čísla? Nie je to síce súčasťou štandardu, ale
+najčastejšie používané kompilátory (gcc a clang) majú aj ~__uint128_t~, ktorý vie uložiť najväčšie číslo ~340282366920938463463374607431768211455~, ale je s tým oštara,
+napr. vypisovanie pomocou ~cout<<~ nie je definované. Alternatíva, keďže s tými číslami toho zase až tak veľa robiť nechceme,  by bola pamätať si číslo
+napr. od zadu po cifrách v nejakom ~vector<int>~ a napísať si násobenie napr. takto:
 </p>
 
 
-
-<button class="btn btn-primary btn-small" id="button-02a" onclick="ukaz('01a')"> riešenie </button>
-<div class="hidden" id="riesenie-02a">
+@11_1@
 
 <p>
+Nič z tohoto ale našťastie nebude nutné: ľahko sa dá vidieť, že nikdy nebude treba násobiť viac ako dvakrát za sebou.
+Na to sa hodia logaritmy (viď. kapitola 23 pre dvojkový logaritmus; tu budeme používať desiatkový, ktorý funguje rovnako):
+pre číslo $x$ platí, že $x=10^{\log_{10}(x)}$. Z toho vidieť, že počet cifier $x$ je $\lfloor\log_{10}(x)\rfloor+1$.
+Ak začíname s číslom $a$, ktoré má nepárny počet cifier, je $\log_{10}(a)=r+z$, kde $r$ je celá časť (párne celé číslo)
+a $z$ je desatinná časť ($0\le z\le1$).
+Potom $\log_{10}(a\cdot2024)=\log_{10}(a)+\log_{10}(2024)\approx r+z+3.3062$. Preto ak $a\cdot2024$ má mať
+nepárny počet cifier (inak by sa rozpadlo na dve), musí byť $\lfloor r+z+3.3062\rfloor$ párne, a teda
+$z+0.3062\gt1$ (lebo $r+3$ je nepárne), t.j. $z\gt\approx0.6938$. Teraz sa ale pozrieme na 
+$\log_{10}(a\cdot2024^2)\approx r+z+6.6124$: $r+6$ je párne a $z+0.6124>1$, preto $a\cdot2024$ má párny počet cifier.
+Inými slovami, po najviac dvoch vynásobeniach dostaneme číslo s párnym počtom cifier, takže veľkosť čísla nám
+nebude príliš rásť. Pri rýchlom programovaní si asi takéto úvahy odpustíme a spoľahneme sa na to, že sa čísla
+zmestia do ~int64_t~.
 </p>
 
+
+<p>
+Ďalšia vec, ktorú bude treba, je zistiť počet cifier čísla. Dá sa to spraviť priamočiaro:
+</p>
+
+@11_2@
+
+<p>
+ale dá sa využiť, že knižnica ~<cmath>~ má aj funkciu ~log10()~, takže počet cifier je ~1+(int)(log10(x))~.
+</p>
+
+<p>
+Napokon treba naprogramovať, ako rozdeliť číslo s párnym počtom cifier na dve čísla. Dajme tomu, že máme číslo $x$. Vždy z neho uberieme poslednú cifru (t.j. ~x % 10~ a ostane nám
+~x/10~) a túto pripíšeme na zasčiatok druhého čísla, $y$. To znamená, že ak pridávame cifru $c$ a $y$ má $r$ cifier, výsledok bude $y+c\cdot10^r$. Hodnotu $10^r$ si môžeme udržiavať
+priebežne takto:
+</p>
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[ 
+      yscale=0.7,
+      xscale=0.7,
+      font={\sffamily\fontsize{14pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=white,circle,fill=primary}
+    ]
+
+
+    \def\rdk[#1](#2)#3{
+      \foreach \v[count=\i from 0] in {#3} {
+        \node[#1] at ($ (#2) + (\i,0) $) {\tt\v};
+      }
+    }
+
+
+    \rdk[green](0,1.5){{x \% 10}}
+    \rdk[white](-5,0){4,2,1,4,7}\rdk[green](0,0){5}
+    \rdk[white](-4,-1){4,2,1,4}\rdk[green](0,-1){7}
+    \rdk[white](-3,-2){4,2,1}\rdk[green](0,-2){4}
+    \rdk[white](-2,-3){4,2,1}
+
+
+    \begin{scope}[shift={(6,0)}]
+      \rdk[primary](0,1.5){y}
+      \rdk[primary](0,0)0
+      \rdk[primary](0,-1)5
+      \rdk[primary](-1,-2){7,5}
+      \rdk[primary](-2,-3){4,7,5}
+    \end{scope}
+
+    \begin{scope}[shift={(10,0)}]
+      \rdk[orange](0,1.5){{10 $^\wedge$ r}}
+      \rdk[orange](0,0)1
+      \rdk[orange](0,-1){1,0}
+      \rdk[orange](0,-2){1,0,0}
+
+    \end{scope}
+
+  \end{tikzpicture}
+\end{document}
+</script>
 </div>
 
-<hr/>
-<h3>Druhá časť</h3>
+<p style="padding-top:35px;">
+Ostáva urobiť úplne posledné pozorovanie a ľahko sa vyriešia obe časti naraz.
+</p>
 
+<button class="btn btn-primary btn-small" id="button-11" onclick="ukaz('11')"> riešenie </button>
+<div class="hidden" id="riesenie-11">
 
-<button class="btn btn-primary btn-small" id="button-02b" onclick="ukaz('02b')"> riešenie </button>
-<div class="hidden" id="riesenie-02b">
+<p>
+To posledné pozorovanie spočíva v tom, že keď budeme robiť veľa iterácií, tak kamene sa budú častokrát rozpadávať na dva (o tom sme sa už presvedčili). To znamená, že počty kameňov budú
+rýchlo narastať a bude ich veľa (ale že ozaj veľa). Na druhej strane, keďže sa rýchlo rozpadajú na dva, dá sa čakať, že tam vždy bude veľa kameňov s rovnakým číslom. A zadanie síce 
+veľmi zdôrazňuje, že kamene ostávajú v rovnakom poradí, ale po krátkom zamysllení je jasné, že na poradí nám vôbec nezáleží: všetky kamene s rovnakým číslom sa správajú rovnako.
+Takže sa oplatí mať kamene zapamätané v ~map<Int,Int>~ kde pre každé číslo kameňa si pamätám počet kópií. Takéto mapy mám dve: jednu, kde mám uložený terajší stav a druhú, do ktorej ukladám 
+nové kamene (treba to mať takto, aby sa mi nemiešali tie, čo som už urobil s tými, ktoré ešte urobiť treba).
+</p>
 
-3^11 = 177147
+@11@
 
 </div>
 
