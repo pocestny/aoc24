@@ -78,7 +78,7 @@ viem pomocou ~replace(line.begin(), line.end(), ',', ' ');~
 <p style="padding-top:30px;">
 Vždy, keď sa zamýšľame nad riešením, je dobré vedieť, aký veľký vstup je treba spracovať. Podľa toho sa dá odhadnúť, aký prístup treba zvoliť.
 V mojom prípade  mal vstup $49$ rôznych stránok, medzi nimi
-$1176$ sipiek (t.j. zjavne medzi každou dvojicou stránok ide šípka nejakým smerom, lebo zo $49$ stránok mám $\frac{49\cdot48}{2}=1176$ dvojíc). 
+$1176$ šípiek (t.j. zjavne medzi každou dvojicou stránok ide šípka nejakým smerom, lebo zo $49$ stránok mám $\frac{49\cdot48}{2}=1176$ dvojíc). 
 Potom nasledovalo $214$ riadkov, priemerná dĺžka riadka bola $14.6822$.
 </p>
 
@@ -94,7 +94,7 @@ nejde šípka z ~r[j]~ do ~r[i]~.
 
 <p>
 Koľko sa pri tom zhruba napočítam? Pri priemernej dĺžke riadku $15$ mám v jednom riadku $\frac{15\cdot14}{2}=105\approx100$ dvojíc pozícií, ktoré treba skontrolovať.
-Pre každú z nich treba prejsť $\approx1000$ sšípiek, a celé to treba pre $\approx200$ riadkov. Dokopy $\approx100\cdot1000\cdot200=20\, 000\, 000$ nejakých základných operácií.
+Pre každú z nich treba prejsť $\approx1000$ šípiek, a celé to treba pre $\approx200$ riadkov. Dokopy $\approx100\cdot1000\cdot200=20\, 000\, 000$ nejakých základných operácií.
 Predpokladám, že dosť veľa riadkov budem vedieť prestať kontrolovať aj skôr (akonáhle nájdem zlú dvojicu, nemusím kontrolovať ďalej), takže by to malo byť 
 v pohode. 
 </p>
@@ -304,7 +304,8 @@ na koniec ~sorted~. Zároveň znížim indegree všetkým stránkam z ~out[u]~ (
 
 </div>
 <hr/>
-<p style="padding-top:35px;">
+<h4>Poznámka</h4>
+<p>
 Ak sa pozrieme do vstupu (môjho, ale predpokladám, že ostatné sú podobné), tak čísla stránok sú všetky dvojciferné a pre každú dvojicu je priamo povedané jej utriedenie jedným alebo druhým smerom.
 To nám umožní program značne zjednodušiť. Jednak stačí mať dvojrozmerné pole ~bool~ veľkosti $100\times100$, v ktorom pre každú dvojicu $x$, $y$ bude ~true~, ak $x$ musí byť pred $y$.
 Potom stačí každý prečítaný riadok utriediť, ale namiesto <q>normálneho</q> triedenia, t.j. podľa veľkosti, využijeme tretí, nepovinný, parameter funkcie ~sort~. Ten reprezentuje tzv. 
@@ -312,7 +313,7 @@ Potom stačí každý prečítaný riadok utriediť, ale namiesto <q>normálneho
 teda vracia tym ~bool~ a ~cmp(x,y)~ vráti ~true~, ak ~x~ je v usporiadaní skôr, ako ~y~ (viac o tom, ako môže byť funkcia parametrom inej funkcie pozri kapitolu 25).                    
 </p>
 
-<button class="btn btn-primary btn-small" id="button-05b2s" onclick="ukaz('05b2s')"> zjednodušenýý program </button>
+<button class="btn btn-primary btn-small" id="button-05b2s" onclick="ukaz('05b2s')"> zjednodušený program </button>
 <div class="hidden" id="riesenie-05b2s">
 @05b2@
 </div>

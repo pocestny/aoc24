@@ -1,0 +1,259 @@
+<h3>Prvá časť</h3>
+<p>
+Zadanie je pomerne priamočiare: pre každý pozemok potrebujeme nájsť jeho veľkosť a obvod. Každé políčko prináša svojmu pozemku jednu jednotku obsahu a toľko obvodu,
+koľko má susedných políčok na iných pozemkoch. Drobný problém vznikne s identifikáciou pozemkov, pretože (aj keď na nasleduúcom príklade to tak nie je),
+môže byť viacero rôznych pozemkov s rovnakým písmenkom. Jedna z možností riešenia je ofarbiť si vstupnú mapu tak, že každý pozemok dostane identifikátor 
+napr. takto:
+</p>
+
+
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=0.9,
+      xscale=0.9,
+      font={\sffamily\fontsize{16pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=white,circle,fill=primary}
+    ]
+
+\def\lst{%
+orange/R/{0/0,0/1,0/2,0/3,1/0,1/1,1/2,1/3,2/2,2/3,2/4,3/2},%
+yellow/I/{0/4,0/5,1/4,1/5},%
+blue/C/{0/6,0/7,1/6,1/7,1/8,2/5,2/6,3/3,3/4,3/5,4/4,5/4,5/5,6/5},%
+magenta/F/{0/8,0/9,1/9,2/7,2/8,2/9,3/7,3/8,3/9,4/8},%
+violet/V/{2/0,2/1,3/0,3/1,4/0,4/1,4/2,4/3,5/0,5/1,5/3,6/0,6/1},%
+cyan/J/{3/6,4/5,4/6,5/6,5/7,6/6,6/7,7/6,7/7,8/6,9/6},%
+red/C/{4/7},%
+green/E/{4/9,5/8,5/9,6/8,6/9,7/8,7/9,8/7,8/8,8/9,9/7,9/8,9/9},%
+olive/I/{5/2,6/2,6/3,6/4,7/1,7/2,7/3,7/4,7/5,8/1,8/2,8/3,8/5,9/3},%
+pink/M/{7/0,8/0,9/0,9/1,9/2},%
+brown/S/{8/4,9/4,9/5}}
+
+
+
+    \foreach \c/\v/\ll[count=\id from 0] in \lst {
+      \foreach \y/\x in \ll {
+        \begin{scope}[shift={(14,0)}]
+        \filldraw[fill=\c,very thin,dotted] ($(\x,-\y)+(-0.5,-0.5)$) rectangle ++(1,1);
+          \node at (\x,-\y) {\normalsize\tt\id};
+        \end{scope}
+        \node[white] at (\x,-\y) {\tt\v};
+      }
+    }
+
+
+    \def\lnz{3.5/0.5/3.5/-0.5, 5.5/0.5/5.5/-0.5, 7.5/0.5/7.5/-0.5, 3.5/-0.5/3.5/-1.5, 5.5/-0.5/5.5/-1.5, 8.5/-0.5/8.5/-1.5, 1.5/-1.5/1.5/-2.5, 4.5/-1.5/4.5/-2.5, 6.5/-1.5/6.5/-2.5, 1.5/-2.5/1.5/-3.5, 2.5/-2.5/2.5/-3.5, 5.5/-2.5/5.5/-3.5, 6.5/-2.5/6.5/-3.5, 3.5/-3.5/3.5/-4.5, 4.5/-3.5/4.5/-4.5, 6.5/-3.5/6.5/-4.5, 7.5/-3.5/7.5/-4.5, 8.5/-3.5/8.5/-4.5, 1.5/-4.5/1.5/-5.5, 2.5/-4.5/2.5/-5.5, 3.5/-4.5/3.5/-5.5, 5.5/-4.5/5.5/-5.5, 7.5/-4.5/7.5/-5.5, 1.5/-5.5/1.5/-6.5, 4.5/-5.5/4.5/-6.5, 5.5/-5.5/5.5/-6.5, 7.5/-5.5/7.5/-6.5, 0.5/-6.5/0.5/-7.5, 5.5/-6.5/5.5/-7.5, 7.5/-6.5/7.5/-7.5, 0.5/-7.5/0.5/-8.5, 3.5/-7.5/3.5/-8.5, 4.5/-7.5/4.5/-8.5, 5.5/-7.5/5.5/-8.5, 6.5/-7.5/6.5/-8.5, 2.5/-8.5/2.5/-9.5, 3.5/-8.5/3.5/-9.5, 5.5/-8.5/5.5/-9.5, 6.5/-8.5/6.5/-9.5, 7.5/-0.5/8.5/-0.5, -0.5/-1.5/0.5/-1.5, 0.5/-1.5/1.5/-1.5, 3.5/-1.5/4.5/-1.5, 4.5/-1.5/5.5/-1.5, 6.5/-1.5/7.5/-1.5, 7.5/-1.5/8.5/-1.5, 2.5/-2.5/3.5/-2.5, 3.5/-2.5/4.5/-2.5, 5.5/-2.5/6.5/-2.5, 1.5/-3.5/2.5/-3.5, 2.5/-3.5/3.5/-3.5, 4.5/-3.5/5.5/-3.5, 6.5/-3.5/7.5/-3.5, 8.5/-3.5/9.5/-3.5, 1.5/-4.5/2.5/-4.5, 4.5/-4.5/5.5/-4.5, 6.5/-4.5/7.5/-4.5, 7.5/-4.5/8.5/-4.5, 2.5/-5.5/3.5/-5.5, 3.5/-5.5/4.5/-5.5, -0.5/-6.5/0.5/-6.5, 0.5/-6.5/1.5/-6.5, 4.5/-6.5/5.5/-6.5, 3.5/-7.5/4.5/-7.5, 6.5/-7.5/7.5/-7.5, 0.5/-8.5/1.5/-8.5, 1.5/-8.5/2.5/-8.5, 4.5/-8.5/5.5/-8.5}
+
+
+    \draw[white](-0.5,-9.5) rectangle ++(10,10);
+    \begin{scope}[shift={(14,0)}]
+    \draw[white](-0.5,-9.5) rectangle ++(10,10);
+    \end{scope}
+
+    \foreach\x/\y/\xx/\yy in \lnz {
+      \draw[primary](\x,\y)--(\xx,\yy);
+    }
+
+  \end{tikzpicture}
+\end{document}
+  
+</script>
+</div>
+
+<p style="padding-top:35px;">
+Potom stačí mať zoznam veľkostí a obvodov jednotlivých pozemkov, prejsť po mape, pre každé políčko si pozrieť ~id~ jeho pozemku, a pre tento pozemok prirátať jednotku k veľkosti
+a toľko k obvodu, koľko je susedných políčok s inými ~id~.
+</p>
+
+<button class="btn btn-primary btn-small" id="button-12a" onclick="ukaz('12a')">  riešenie </button>
+<div class="hidden" id="riesenie-12a">
+<p>
+Vstup si uložím do ~vector<string> in~ a urobím si ~vector<vector<int>> ids~, kde si budem pre každé políčko pamätať ~id~ jeho pozemku. Na prácu s pozíciami použijem štandardne 
+náš predpripravený typ ~Pos~. K prístupu si urobím pomocné funkcie ~valid()~, ~ch()~ a ~id()~, ktoré skontrolujú, či je pozícia na mape. Úvodné reči s čítaním
+vstupu by mohli vyzerať takto:
+</p>
+
+@12_1@
+
+
+<p>
+Hlavnou výzvou je ofarbiť mapu, t.j. vyrobiť pole ~ids~. To urobím tak, že prechádzam po mape a vždy, keď nájdem ešte neoznačený pozemok (t.j. keď narazím na políčko
+s ~ids[i][j]==-1~, priradím mu nové ~id~ a postupne v mape ofarbím celý súvislý úsek. 
+</p>
+
+@12_2@
+
+<p>
+Farbenie môžem robiť v zásade dvoma spôsobmi. Prvý prístup je rekurzívny: čo to znamená 
+ofarbiť súvislý úsek? Začínam na nejakom políčku, pozriem sa na jeho susedov, a keď nájdem takého, čo má rovnaké písmenko, ale ešte nemá nastavené ~id~, tak mu nastavím ~id~
+a urobím na ňom presne to isté (pozriem sa na jeho susedov, ... ). To viem veľmi prirodzene napísať rekurzívnou funkciou
+</p>
+
+@12_3@
+
+<p>
+Alternatívne sa dá vyhnúť rekurzii: budem mať ~vector<Pos> stack~, kde si budem odkladať políčka, ktoré viem, že ešte musím spracovať. Namiesto rekurzívneho volania
+uložím políčko do zásobníka.
+</p>
+
+@12_4@
+
+<p>
+Samotný program je potom priamočiary
+</p>
+
+@12a@
+
+</div>
+
+<hr/>
+<h3>Druhá časť</h3>
+
+<p>
+Začiatok je rovnaký ako v prvej časti: ofarbím si mapu a vyrobím si identifikátory pozemkov. Rozdiel je v tom,
+že teraz ma namiesto obvodu zaujíma iba počet strán pozemku. Môžem to rátať rôzne, jedna z možností je povedať si, že
+z každej strany (t.j. postupnosti plotov tvoriacich jednu čiaru) zarátam iba tú poslednú (t.j. hranicu toho políčka,
+za ktorým už plot nepokračuje v tom smere ďalej). Takže pre nejakú pozíciu ~p~ a dmer ~dir[d]~ potrebujem,
+aby ~id(p) != id(p + dir[d])~. Navyše, aby plot končil, musí nastať jeden z dvoch prípadov. 
+Buď ~id(p) != id(p+dir[(d+1) % 4])~ (tu som využil, že smery v poli ~dir~ idú v semre hodinových ručičiek):
+</p>
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=1.7,
+      xscale=1.7,
+      font={\sffamily\fontsize{16pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=white,circle,fill=primary}
+    ]
+
+    \def\rct(#1){($(#1)+(-0.5,-0.5)$) rectangle ++(1,1)}
+
+    \def\bx[#1](#2)#3{
+      \filldraw[fill=#1,very thin,dotted] \rct(#2);
+      \node at (#2) {\tt #3};
+    }
+
+    \def\bxs{
+       \bx[violet](0,0)4
+    \bx[orange](0,1)0
+    \bx[violet](1,0)4
+    \bx[orange](1,1)0
+    \bx[orange](2,1)0
+    \bx[orange](2,0)0
+    }
+
+    \begin{scope}[shift={(-5,0)}]
+      \bxs
+      \draw[green,very thick] (0.5,0.5) -- (1.5,0.5);
+    \end{scope}
+    \bxs
+
+    \draw[primary,thick] \rct(1,0);
+    \draw[primary,thick,->] (1,0.5) -- ++(0,1.8) node[anchor=south]{\tt dir[d]};
+    \draw[primary,thick,->] (1.5,0) -- ++(1.8,0) node[anchor=west]{\tt dir[(d+1) \% 4]};
+
+  \end{tikzpicture}
+\end{document}
+</script>
+</div>
+
+<p style="padding-top:35px;">
+alebo  ~id(p + dir[(d + 1) % 4] + dir[d]) == id(p)~:
+</p>
+
+<div style="text-align:center;width:100%!important;">
+<script type="text/tikz">
+\begin{document}
+  \definecolor{primary}{HTML}{62C4FF}
+  \definecolor{yellow}{HTML}{FFFF00}
+  \usetikzlibrary{calc,arrows.meta,decorations.pathreplacing}
+  \begin{tikzpicture}[
+      yscale=1.7,
+      xscale=1.7,
+      font={\sffamily\fontsize{16pt}{32}\selectfont},
+      line width=1pt,
+      thick/.style={line width=2pt},
+      very thick/.style={line width=4pt},
+      line cap=round,
+      brace/.style args = {#1/#2}{
+            decorate,
+            decoration={brace, amplitude=5pt,
+                        pre=moveto,pre length=1pt,post=moveto,post length=1pt,
+                        raise=#1,
+                        #2,% for mirroring of brace
+                        }
+                      , thin},
+      ant/.style={draw=white,circle,fill=primary}
+    ]
+
+    \def\rct(#1){($(#1)+(-0.5,-0.5)$) rectangle ++(1,1)}
+
+    \def\bx[#1](#2)#3{
+      \filldraw[fill=#1,very thin,dotted] \rct(#2);
+      \node at (#2) {\tt #3};
+    }
+
+    \def\bxs{
+    \bx[violet](0,0)4
+    \bx[orange](0,1)0
+    \bx[violet](1,0)4
+    \bx[orange](1,1)0
+    \bx[violet](2,1)4
+    \bx[violet](2,0)4
+    }
+
+    \begin{scope}[shift={(-5,0)}]
+      \bxs
+      \draw[green,very thick] (0.5,0.5) -- (1.5,0.5);
+    \end{scope}
+    \bxs
+
+    \draw[primary,thick] \rct(1,0);
+    \draw[primary,thick,->] (1,0.5) -- ++(0,1.8) node[anchor=south]{\tt dir[d]};
+    \draw[primary,thick,->] (1.5,0) -- ++(1.8,0) node[anchor=west]{\tt dir[(d+1) \% 4]};
+
+  \end{tikzpicture}
+\end{document}
+</script>
+</div>
+
+<button class="btn btn-primary btn-small" id="button-12b" onclick="ukaz('12b')" style="margin-top:35px!important;">  
+  celý program </button>
+<div class="hidden" id="riesenie-12b">
+
+@12b@  
+</div>
