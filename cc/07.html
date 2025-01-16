@@ -95,5 +95,16 @@ No a už to ostáva len dať celé dokopy
 
 @07b@
 
+<hr/>
+
+<h4>Poznámka</h4>
+<p>
+Iný prístup (ktorý v skutočnosti beží onmoho rýchlejšie) je využiť rekurziu (viď kapitola 11). V nasledujúcom programe mám funkciu ~test~ s troma parametrami. Prvý, ~m~, je číslo, ktoré chcem dosiahnuť.
+Druhý, ~acc~, je doteraz zrátaná hodnota, a tretí, ~i~, je pozícia. Výsledkom je ~bool~, ktorý hovorí, či sa ~m~ dá dosiahnuť na zvyšku vstupu od pozície ~i~, ak som doposiaľ doplnil operátory tak,
+že hodnota bola ~acc~. Funkcia má dve časti: ak som už prišiel na koniec vstupu (~i>=a.size()~), tak len porovnám, či ~acc==m~. V opačnom prípade vyskúšam všetky tri operácie a zavolám tú istú funkciu na zvyšok:
+</p>
+
+@07b2@
+
 </div>
 
