@@ -8,4 +8,3 @@ for n,ns in [it.split(':') for it in open('d7.in').read().split('\n')]:
   if n in bol:
     vys+=n
 print('vys:',vys)
-
